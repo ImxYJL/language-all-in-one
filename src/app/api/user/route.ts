@@ -1,13 +1,31 @@
 import { NextResponse } from 'next/server';
-import { getUser } from '@/libs/data/users';
+import { jwtVerify } from 'jose';
+import { users } from '@/libs/data/users';
+import { getUser } from '@/apis/users';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const token = request.headers.get('cookie')?.split('; ').find(c => c.startsWith('token='))?.split('=')[1];
+
+  if (!token) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
   try {
-    const user = await getUser();
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY!);
+    const { payload } = await jwtVerify(token, secret);
+
+    // If the user is from the mocked data, return the mocked data
+    if (payload.name) {
+      const mockedUser = users.find((user) => user.id === payload.id);
+      if (mockedUser) {
+        return NextResponse.json(mockedUser);
+      }
+    }
+
+    // Otherwise, fetch the user from Supabase
+    const user = await getUser(payload.id as string);
     return NextResponse.json(user);
   } catch (error) {
-    // In the future, you can handle specific errors from your data layer
-    console.error(error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new NextResponse('Unauthorized', { status: 401 });
   }
 }

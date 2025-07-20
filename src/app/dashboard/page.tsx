@@ -3,6 +3,11 @@ import UserInfo from '@/frontend/components/dashboard/UserInfo';
 import { QueryProvider } from '@/frontend/providers';
 import { QUERY_KEY } from '@/frontend/queries/queryKeys';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
+import startMockWorker from '@/libs/msw/startMockWorker';
+
+if (process.env.NODE_ENV === 'development') {
+  await import('@/libs/msw/server'); // ✅ 이걸 호출해야 server.listen()이 실행됨
+}
 
 export default async function DashboardPage() {
   const queryClient = new QueryClient();
