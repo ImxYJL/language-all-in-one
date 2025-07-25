@@ -1,60 +1,45 @@
-import { supabase } from '@/libs/supabase/client';
-import { NextResponse } from 'next/server';
-import { SignJWT } from 'jose';
-import { users } from '@/libs/data/users';
+import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { LoginSchema } from '@/validators/auth';
+import { getUserByUsername } from '@/backend/models/users';
+import { createAuthToken } from '@/backend/utils/auth';
+import { isDev, isMockUser } from '@/backend/utils/env';
+import { MOCKED_USER } from '@/libs/msw/mock/users';
 
-export async function POST(request: Request) {
-  const { id } = await request.json();
+function createLoginResponse(token: string, message: string) {
+  const res = NextResponse.json({ message });
 
-  if (!id) {
-    return new NextResponse('ID is required', { status: 400 });
-  }
-
-  const { data, error } = await supabase.from('users').select('id').eq('id', id).single();
-
-  if (error || !data) {
-    const mockedUser = users.find((user) => user.id === id);
-    if (mockedUser) {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY!);
-      const token = await new SignJWT({ id: mockedUser.id, name: mockedUser.name })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('1h')
-        .sign(secret);
-
-      const response = new NextResponse(JSON.stringify({ message: 'Login successful (mocked)' }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      response.cookies.set('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        maxAge: 60 * 60,
-        path: '/',
-      });
-
-      return response;
-    }
-    return new NextResponse('User not found', { status: 404 });
-  }
-
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY!);
-  const token = await new SignJWT({ id: data.id })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('1h')
-    .sign(secret);
-
-  const response = new NextResponse(JSON.stringify({ message: 'Login successful' }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  response.cookies.set('token', token, {
+  res.cookies.set('token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',
-    maxAge: 60 * 60,
+    secure: !isDev(),
     path: '/',
+    maxAge: 60 * 60,
+    sameSite: 'lax',
   });
 
-  return response;
+  return res;
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const parsed = LoginSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json({ message: 'Invalid login input' }, { status: 400 });
+  }
+
+  const { username, password } = parsed.data;
+
+  if (isMockUser(username)) {
+    const token = await createAuthToken({ id: MOCKED_USER.id });
+    return createLoginResponse(token, 'Mock login success');
+  }
+
+  const user = await getUserByUsername(username);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return NextResponse.json({ message: 'Invalid username or password' }, { status: 401 });
+  }
+
+  const token = await createAuthToken({ id: user.id });
+  return createLoginResponse(token, 'Login success');
 }
