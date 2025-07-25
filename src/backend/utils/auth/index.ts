@@ -14,7 +14,13 @@ export function getTokenFromRequest(request: Request): string | undefined {
         ?.split('=')[1];
 }
 
-export async function createAuthToken(payload: Record<string, unknown>, expiresIn = '1h'): Promise<string> {
+interface AuthPayload {
+  id: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
+export async function createAuthToken(payload: AuthPayload, expiresIn = '1h'): Promise<string> {
   const secret = new TextEncoder().encode(serverEnv.JWT_SECRET_KEY);
 
   return await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).setExpirationTime(expiresIn).sign(secret);
