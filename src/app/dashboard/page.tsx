@@ -4,17 +4,33 @@ import { QueryProvider } from '@/frontend/providers';
 import { QUERY_KEY } from '@/frontend/queries/queryKeys';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import startMockWorker from '@/libs/msw/startMockWorker';
+import { cookies } from 'next/headers';
 
-if (process.env.NODE_ENV === 'development') {
-  await import('@/libs/msw/server'); // ✅ 이걸 호출해야 server.listen()이 실행됨
-}
+startMockWorker();
 
 export default async function DashboardPage() {
-  const queryClient = new QueryClient();
+  // TODO: 상수화
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+        throwOnError: true,
+      },
+      mutations: {
+        retry: 1,
+        throwOnError: true,
+      },
+    },
+  });
+
+  // TODO: 토큰 제거
+  const cookieData = await cookies();
+  const token = cookieData.get('token')?.value;
 
   await queryClient.prefetchQuery({
     queryKey: [QUERY_KEY.getUserInfo],
-    queryFn: getUserInfo,
+    queryFn: () => getUserInfo(token),
   });
 
   const dehydratedState = dehydrate(queryClient);

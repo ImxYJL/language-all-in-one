@@ -8,12 +8,12 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        retry: 2,
+        retry: 1,
         refetchOnWindowFocus: false,
         throwOnError: true,
       },
       mutations: {
-        retry: 2,
+        retry: 1,
         throwOnError: true,
       },
     },
