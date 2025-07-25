@@ -1,23 +1,18 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { NextRequest, NextResponse } from 'next/server';
+import { getTokenFromRequest, verifyAuthToken } from '@/backend/utils/auth';
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
+  const token = getTokenFromRequest(request);
 
-  if (!token) {
+  const parsed = token ? await verifyAuthToken(token) : null;
+
+  if (!parsed?.isValid) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY!);
-    await jwtVerify(token, secret);
-    return NextResponse.next();
-  } catch (error) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/dashboard/:path*',
+  matcher: ['/dashboard/:path*'],
 };
