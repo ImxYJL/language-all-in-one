@@ -15,6 +15,6 @@ export function getRealUserId() {
 
 export function isMockUser(username?: string, id?: string) {
   if (username) return username === MOCKED_USER.username;
-  if (id) return id === serverEnv.REAL_USER_ID;
+  if (id) return id === MOCKED_USER.id;
   return null;
 }
