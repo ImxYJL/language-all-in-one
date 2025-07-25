@@ -1,8 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/apis/auth';
+import { LoginRequestBody } from '@/types/auth';
 
 export const useLogin = () => {
   return useMutation({
-    mutationFn: (id: string) => login(id),
+    mutationFn: ({username, password}: LoginRequestBody) => login({username, password}),
   });
 };
