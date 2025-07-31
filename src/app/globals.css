@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -12,6 +12,9 @@
 
   --theme-secondary-hover1: oklch(0.8 0.08 142.8);
   --theme-secondary-hover2: oklch(0.73 0.07 142.8);
+
+  --theme-disabled-bg: oklch(0.92 0 0);
+  --theme-disabled-text: oklch(0.6 0 0);
 }
 
 .theme-blue {
