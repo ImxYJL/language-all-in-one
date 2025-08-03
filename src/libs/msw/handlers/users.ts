@@ -1,5 +1,5 @@
 import { ENDPOINT } from '@/apis/endpoints';
-import { MOCKED_USER_PROFILE } from '@/libs/data/users';
+// import { MOCKED_USER_PROFILE } from '@/libs/data/users';
 import { http, HttpResponse } from 'msw';
 
 export const getUserProfile = () =>
@@ -12,7 +12,7 @@ export const getUserProfile = () =>
 export const getUserInfo = () =>
   http.get('http://localhost:3000/api/user', () => {
     // Now the browser mock uses the same data source as the API route mock
-    return HttpResponse.json(MOCKED_USER_PROFILE);
+    return HttpResponse.json();
   });
 
 const userHandler = [getUserProfile(), getUserInfo()];
