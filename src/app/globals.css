@@ -46,6 +46,8 @@
   --color-primary-hover2: var(--theme-primary-hover2);
   --color-secondary-hover1: var(--theme-secondary-hover1);
   --color-secondary-hover2: var(--theme-secondary-hover2);
+
+  --color-border: oklch(0.9 0 0);
 }
 
 @media (prefers-color-scheme: dark) {
