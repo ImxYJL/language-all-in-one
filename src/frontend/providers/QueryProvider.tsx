@@ -2,7 +2,7 @@
 
 import { DehydratedState, HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
-import ReactQueryDevtoolsProvider from '../QueryDevtoolsProvider';
+import ReactQueryDevtoolsProvider from './ReactQueryDevtoolsProvider';
 
 function makeQueryClient() {
   return new QueryClient({
