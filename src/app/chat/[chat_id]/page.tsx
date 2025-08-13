@@ -4,7 +4,12 @@ import { ChatContent, ChatInput } from '@/frontend/components/chat';
 // 고정 부분: ChatInput
 // input 상태값(state: client)으로 서버에 제출, 그 로딩 상태와 응답값 필요
 
-function ChatPage() {
+type ChatDetailPageParams = Promise<{ chat_id: string }>;
+
+async function ChatDetailPage(params: ChatDetailPageParams) {
+  const { chat_id } = await params;
+  const chatId = Number(chat_id);
+
   return (
     <>
       <ChatContent />
@@ -13,4 +18,4 @@ function ChatPage() {
   );
 }
 
-export default ChatPage;
+export default ChatDetailPage;
