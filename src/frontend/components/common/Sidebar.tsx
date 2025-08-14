@@ -1,7 +1,7 @@
 'use client';
 
 import { BookOpen, Calendar, MessageCircle, Plus } from 'lucide-react';
-import { Button, ScrollArea, NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
+import { Button, NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
 import { ChatList } from '../chat';
 
 const Sidebar = () => {
@@ -24,7 +24,7 @@ const Sidebar = () => {
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 px-4">
+        <div className="flex-1 px-4">
           {/* Navigation Section */}
           <NavigationList title="이동하기">
             <NavigationItem icon={BookOpen} label="오늘의 단어" href="#" />
@@ -34,7 +34,7 @@ const Sidebar = () => {
 
           {/* Chat List Section */}
           <ChatList />
-        </ScrollArea>
+        </div>
       </div>
     </aside>
   );
