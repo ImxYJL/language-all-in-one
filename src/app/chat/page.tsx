@@ -4,7 +4,7 @@ function ChatPage() {
   return (
     <>
       <ChatContent />
-      <ChatInput />
+      {/* <ChatInput /> */}
     </>
   );
 }
