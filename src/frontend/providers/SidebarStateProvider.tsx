@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 type SidebarContextType = {
   isSidebarOpen: boolean;
@@ -13,6 +13,12 @@ const SidebarStateContext = createContext<SidebarContextType | undefined>(undefi
 
 export const SidebarStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const openSidebar = () => setIsSidebarOpen(true);
+  const closeSidebar = () => setIsSidebarOpen(false);
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  const value: SidebarContextType = { isSidebarOpen, openSidebar, closeSidebar, toggleSidebar };
 
   // NOTE: 추후 로직 분리 혹은 상수화
   useLayoutEffect(() => {
@@ -30,18 +36,8 @@ export const SidebarStateProvider = ({ children }: { children: React.ReactNode }
     };
   }, [isSidebarOpen]);
 
-  const api = useMemo<SidebarContextType>(
-    () => ({
-      isSidebarOpen,
-      openSidebar: () => setIsSidebarOpen(true),
-      closeSidebar: () => setIsSidebarOpen(false),
-      toggleSidebar: () => setIsSidebarOpen((p) => !p),
-    }),
-    [isSidebarOpen],
-  );
-
   return (
-    <SidebarStateContext.Provider value={api}>
+    <SidebarStateContext.Provider value={value}>
       <div data-sidebar={isSidebarOpen ? 'open' : 'closed'} className="group/sidebar">
         {children}
       </div>
