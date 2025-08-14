@@ -7,3 +7,4 @@ export { default as Header } from './Header';
 export { default as NavigationList } from './NavigationList';
 export { default as NavigationItem } from './NavigationItem';
 export { default as SidebarToggleButton } from './SidebarToggleButton';
+export { default as LoadingBar } from './LoadingBar';
