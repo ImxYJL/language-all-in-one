@@ -1,33 +1,17 @@
 'use client';
 
-import { BookOpen, Calendar, MessageCircle, Plus, X } from 'lucide-react';
-import { Button, ScrollArea, NavigationList, NavigationItem } from '@/frontend/components/common';
-import { useSidebarStateContext } from '@/frontend/providers/SidebarStateProvider';
+import { BookOpen, Calendar, MessageCircle, Plus } from 'lucide-react';
+import { Button, ScrollArea, NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
 import { ChatList } from '../chat';
-import clsx from 'clsx';
 
 const Sidebar = () => {
-  const { closeSidebar, isSidebarOpen } = useSidebarStateContext();
-
   return (
     <aside
       id="app-sidebar"
-      className={clsx(
-        'border-border/20 fixed inset-y-0 left-0 z-50 w-80 border-r',
-        'bg-gradient-to-b from-white to-gray-50/90 backdrop-blur-sm',
-        'transition-transform duration-300 ease-in-out',
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
-      )}
+      className="border-border/20 fixed inset-y-0 left-0 z-50 w-80 -translate-x-full border-r bg-gradient-to-b from-white to-gray-50/90 backdrop-blur-sm transition-transform duration-300 ease-in-out will-change-transform group-data-[sidebar=open]/sidebar:translate-x-0 motion-reduce:transition-none"
     >
       <div className="flex h-full flex-col">
-        {/* Sidebar Header */}
-        <div className="border-border flex h-14 items-center justify-between border-b p-4">
-          <h2 className="font-medium text-gray-800">ChatAI</h2>
-          <Button styleType="custom" onClick={closeSidebar} className="text-gray-500 hover:text-gray-700">
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
+        <SidebarHeader />
         {/* New Chat Button */}
         <div className="p-4">
           <Button
