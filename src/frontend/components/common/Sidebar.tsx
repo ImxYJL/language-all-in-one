@@ -1,5 +1,3 @@
-'use client';
-
 import { BookOpen, Calendar, MessageCircle, Plus } from 'lucide-react';
 import { Button, NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
 import { ChatList } from '../chat';
@@ -17,7 +15,6 @@ const Sidebar = () => {
           <Button
             styleType="primary"
             className="flex h-10 w-full items-center justify-center transition-all duration-200"
-            onClick={() => console.log('create new chat')}
           >
             <Plus className="mr-2 h-4 w-4 text-white" strokeWidth={3} />
             <span>새로운 채팅</span>

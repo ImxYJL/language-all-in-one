@@ -1,3 +1,5 @@
+'use client';
+
 import { useChatPageState } from '@/frontend/providers/ChatPageStateProvider';
 import ChatItem from './ChatItem';
 
