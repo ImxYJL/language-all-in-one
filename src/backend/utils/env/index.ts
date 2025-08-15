@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 
 import { MOCKED_USER } from '@/libs/msw/mock/users';
 import { serverEnv } from '@/validators/env';
