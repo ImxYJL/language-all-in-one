@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTokenFromRequest, verifyAuthToken } from '@/backend/utils/auth';
+import { getAuthUser } from '@/backend/utils/auth';
 
 export async function middleware(request: NextRequest) {
-  const token = getTokenFromRequest(request);
+  const parsedReq = await getAuthUser(request);
 
-  const parsed = token ? await verifyAuthToken(token) : null;
-
-  if (!parsed?.isValid) {
+  const isValid = parsedReq ?? null;
+  if (!isValid) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -14,5 +13,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/chat/:path*'],
 };

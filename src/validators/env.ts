@@ -6,6 +6,8 @@ const ServerEnvSchema = z.object({
   REAL_USER_ID: z.string().min(1, 'REAL_USER_ID is required'),
   SUPABASE_URL: z.url('SUPABASE_URL must be a valid URL'),
   SUPABASE_ANON_KEY: z.string().min(1, 'SUPABASE_ANON_KEY is required'),
+  JWT_ISSUER: z.string().min(1, 'JWT_ISSUER is required'),
+  JWT_AUDIENCE: z.string().min(1, 'JWT_AUDIENCE is required'),
 });
 
 export const serverEnv = ServerEnvSchema.parse(process.env);
