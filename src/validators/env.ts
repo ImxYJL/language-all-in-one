@@ -8,6 +8,7 @@ const ServerEnvSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1, 'SUPABASE_ANON_KEY is required'),
   JWT_ISSUER: z.string().min(1, 'JWT_ISSUER is required'),
   JWT_AUDIENCE: z.string().min(1, 'JWT_AUDIENCE is required'),
+  WORDNIK_API_KEY: z.string().min(1, 'WORDNIK_KEY is required'),
 });
 
 export const serverEnv = ServerEnvSchema.parse(process.env);
