@@ -1,16 +1,18 @@
 import 'server-only';
 
-import { WORDNIK_BASE_URL, WORDNIK_DEFAULTS } from './wordnik.constants';
+import { WORDNIK_BASE_URL, WORDNIK_DEFAULT } from './wordnik.constants';
 import {
   WnDefinition,
   WnDefinitionsSchema,
   WnErrorSchema,
   WnRandomWord,
+  WnRandomWordSchema,
   WnRelatedItem,
   WnRelatedSchema,
 } from './wordnik.schemas';
 import z from 'zod';
 import { serverEnv } from '@/validators/env';
+import { UpstreamError } from '@/backend/utils/error/upstreamError';
 
 const WORDNIK_API_KEY = serverEnv.WORDNIK_API_KEY;
 
@@ -25,16 +27,6 @@ export interface GetRelatedParams {
   useCanonical?: boolean;
   limitPerRelationshipType?: number;
   relationshipTypes?: 'synonym';
-}
-
-export class UpstreamError extends Error {
-  constructor(
-    public status: number,
-    public resource: string,
-    message: string,
-  ) {
-    super(message);
-  }
 }
 
 function buildUrl(path: string, qs?: Record<string, string | number | boolean | undefined>) {
@@ -74,7 +66,7 @@ async function requestJson<T>(url: URL, resource: string, schema: z.ZodType<T>):
 }
 
 export async function getDefinitions(word: string, params?: GetDefinitionsParams): Promise<WnDefinition[]> {
-  const p = { ...WORDNIK_DEFAULTS.definitions, ...params };
+  const p = { ...WORDNIK_DEFAULT.definitions, ...params };
   const url = buildUrl(`/word.json/${encodeURIComponent(word)}/definitions`, {
     limit: p.limit,
     includeRelated: p.includeRelated,
@@ -86,7 +78,7 @@ export async function getDefinitions(word: string, params?: GetDefinitionsParams
 }
 
 export async function getRelated(word: string, params?: GetRelatedParams): Promise<WnRelatedItem[]> {
-  const p = { ...WORDNIK_DEFAULTS.related, ...params };
+  const p = { ...WORDNIK_DEFAULT.related, ...params };
   const url = buildUrl(`/word.json/${encodeURIComponent(word)}/relatedWords`, {
     useCanonical: p.useCanonical,
     limitPerRelationshipType: p.limitPerRelationshipType,
@@ -96,7 +88,7 @@ export async function getRelated(word: string, params?: GetRelatedParams): Promi
   try {
     return await requestJson(url, 'relatedWords', WnRelatedSchema);
   } catch (e) {
-    // 유의어 없으면 Wordnik가 404를 주는 경우가 있음 → 빈 배열로 대체
+    // 유의어 없으면 Wordnik가 404를 줌 → 빈 배열로 대체
     if (e instanceof UpstreamError && e.status === 404) return [];
     throw e;
   }
@@ -106,14 +98,7 @@ export async function getRandomWord(): Promise<string> {
   const url = buildUrl('/words.json/randomWord', {
     hasDictionaryDef: true,
   });
-  const data = await requestJson<WnRandomWord>(
-    url,
-    'randomWord',
-    z.object({
-      id: z.number(),
-      word: z.string(),
-    }),
-  );
+  const data = await requestJson<WnRandomWord>(url, 'randomWord', WnRandomWordSchema);
 
   return data.word;
 }
