@@ -14,7 +14,7 @@ type WordnikDefaults = {
 
 export const WORDNIK_BASE_URL = 'https://api.wordnik.com/v4';
 
-export const WORDNIK_DEFAULTS = {
+export const WORDNIK_DEFAULT = {
   definitions: { limit: 10, includeRelated: false, useCanonical: true, includeTags: false },
   related: { useCanonical: true, limitPerRelationshipType: 20, relationshipTypes: 'synonym' },
 } satisfies WordnikDefaults;
