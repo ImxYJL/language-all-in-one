@@ -1,13 +1,17 @@
 import type { AppDefinition, AppWordBundle } from '@/types/word';
-import { getDefinitions, getRelated, getRandomWord } from '@/backend/clients/wordnik/wordnik.clients';
+import { wordnikClient } from '@/backend/clients/wordnik/wordnik.clients';
 import type { WnDefinition } from '@/backend/clients/wordnik/wordnik.schemas';
+import { getCachedRandomWord } from '../cache/word.cache';
 
 function hasText(d: WnDefinition): d is WnDefinition & { text: string } {
   return typeof d.text === 'string' && d.text.length > 0;
 }
 
 export async function getWordBundle(word: string): Promise<AppWordBundle> {
-  const [rawDefinitions, relations] = await Promise.all([getDefinitions(word), getRelated(word)]);
+  const [rawDefinitions, relations] = await Promise.all([
+    wordnikClient.getDefinitions(word),
+    wordnikClient.getRelated(word),
+  ]);
 
   const definitions: AppDefinition[] = rawDefinitions
     .filter(hasText)
@@ -20,7 +24,7 @@ export async function getWordBundle(word: string): Promise<AppWordBundle> {
 
 export async function getWordBundleRandom(retries = 3): Promise<AppWordBundle> {
   for (let i = 0; i < retries; i++) {
-    const word = await getRandomWord();
+    const word = await getCachedRandomWord();
     const bundle = await getWordBundle(word);
 
     if (bundle.definitions.length > 0) return bundle;
