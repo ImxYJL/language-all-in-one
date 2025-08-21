@@ -107,12 +107,6 @@ export class WordnikClient extends BaseApiClient {
     }
     return url.toString();
   }
-
-  protected handleErrorResponse(): never {
-    throw new Error(
-      'This method should not be called directly. Errors are now handled within each request method via requestAndParse.',
-    );
-  }
 }
 
 export const wordnikClient = new WordnikClient(serverEnv.WORDNIK_API_KEY);
