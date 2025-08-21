@@ -10,10 +10,6 @@ export abstract class BaseApiClient {
   }
 
   protected async parseJsonResponse<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
-    if (!response.ok) {
-      return this.handleErrorResponse(response);
-    }
-
     try {
       const body = await response.json();
       return schema.parse(body);
@@ -22,7 +18,4 @@ export abstract class BaseApiClient {
       throw new Error('Failed to parse or validate API response.');
     }
   }
-
-  // 에러 처리를 사용처에게 위임
-  protected abstract handleErrorResponse(response: Response): never;
 }
