@@ -15,7 +15,19 @@ export const WnRelatedItemSchema = z.object({
   relationshipType: z.string(),
   words: z.array(z.string()),
 });
-export const WnRelatedSchema = z.array(WnRelatedItemSchema);
+export const WnRelatedSchema = z.any().transform((data) => {
+  // 만약 /relatedWords API 응답이 정상적인 배열이면 그대로 파싱해 반환
+  if (Array.isArray(data)) {
+    return WnRelatedItemSchema.array().parse(data);
+  }
+
+  console.warn(
+    'Received non-array response for relatedWords. Returning empty array. Discarded data:',
+    JSON.stringify(data),
+  );
+
+  return [];
+});
 
 export const WnErrorSchema = z
   .object({
