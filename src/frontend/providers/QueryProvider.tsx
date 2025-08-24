@@ -1,24 +1,9 @@
 'use client';
 
-import { DehydratedState, HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { DehydratedState, HydrationBoundary, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import ReactQueryDevtoolsProvider from './ReactQueryDevtoolsProvider';
-
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: 1,
-        refetchOnWindowFocus: false,
-        throwOnError: true,
-      },
-      mutations: {
-        retry: 1,
-        throwOnError: true,
-      },
-    },
-  });
-}
+import { makeQueryClient } from '@/libs/tanstack/queryClient';
 
 const QueryProvider = ({
   children,
