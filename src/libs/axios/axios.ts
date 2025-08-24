@@ -1,24 +1,26 @@
 import axios from 'axios';
+
+const API_PREFIX = '/api';
+const normalizeUrl = (s?: string) => (s ?? '').replace(/\/+$/, ''); // 중복 슬래시 제거용
+
 const isServer = typeof window === 'undefined';
 
-const axiosInstance = axios.create({
-  baseURL: isServer ? process.env.NEXT_SERVER_API_ORIGIN : process.env.NEXT_PUBLIC_CLIENT_API_ORIGIN,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-  withCredentials: true,
-  timeout: 10000,
-});
+const serverOrigin = normalizeUrl(process.env.NEXT_SERVER_API_ORIGIN) || 'http://localhost:3000';
+const clientBase = process.env.NEXT_PUBLIC_CLIENT_API_ORIGIN ?? API_PREFIX;
 
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn(`Unauthorized: ${error.response.data.message}`);
-    }
-    return Promise.reject(error);
-  },
-);
+// 서버: http://localhost:3000 + /api
+// 클라이언트: 기본적으로 /api
+const baseURL = isServer
+  ? `${serverOrigin}${API_PREFIX}`
+  : clientBase.startsWith('/')
+    ? clientBase
+    : `${API_PREFIX}${clientBase ? `/${clientBase}` : ''}`;
+
+const axiosInstance = axios.create({
+  baseURL,
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+  withCredentials: true,
+  timeout: 10_000,
+});
 
 export default axiosInstance;
