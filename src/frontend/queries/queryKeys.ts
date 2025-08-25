@@ -1,3 +1,3 @@
 export const QUERY_KEY = {
-  getUserInfo: 'getUserInfo',
+  getRandomWord: 'getRandomWord',
 } as const;
