@@ -1,7 +1,4 @@
-import { getUserInfo } from '@/apis/users';
-import UserInfo from '@/frontend/components/dashboard/UserInfo';
 import { QueryProvider } from '@/frontend/providers';
-import { QUERY_KEY } from '@/frontend/queries/queryKeys';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import startMockWorker from '@/libs/msw/startMockWorker';
 import { cookies } from 'next/headers';
@@ -28,10 +25,10 @@ export default async function DashboardPage() {
   const cookieData = await cookies();
   const token = cookieData.get('token')?.value;
 
-  await queryClient.prefetchQuery({
-    queryKey: [QUERY_KEY.getUserInfo],
-    queryFn: () => getUserInfo(token),
-  });
+  // await queryClient.prefetchQuery({
+  //   queryKey: [QUERY_KEY.getUserInfo],
+  //   queryFn: () => getUserInfo(token),
+  // });
 
   const dehydratedState = dehydrate(queryClient);
   console.log('dehydratedState', dehydratedState);
@@ -40,7 +37,7 @@ export default async function DashboardPage() {
     <QueryProvider dehydratedState={dehydratedState}>
       <div className="p-6">
         <h1 className="mb-4 text-xl font-bold">테스트 하이드레이션 페이지</h1>
-        <UserInfo />
+        {/* <UserInfo /> */}
       </div>
     </QueryProvider>
   );
