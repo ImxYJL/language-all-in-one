@@ -2,16 +2,16 @@ const startMockWorker = async () => {
   if (typeof window === 'undefined') {
     if (process.env.NODE_ENV === 'development') {
       const { server } = await import('./server');
-      server.listen();
-      console.log('[MSW] Server-side mock server started');
+      console.log('[MSW] server.listen pid=%d ts=%d', process.pid, Date.now());
+      return server.listen();
     }
     return;
   }
 
   if (process.env.NODE_ENV === 'development') {
     const { worker } = await import('./browser');
-    await worker.start();
-    console.log('[MSW] Client-side mock worker started');
+    console.log('[MSW] worker.listen(client) pid=%d ts=%d', process.pid, Date.now());
+    return await worker.start();
   }
 };
 
