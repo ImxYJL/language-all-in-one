@@ -8,7 +8,7 @@ const WelcomeSection = () => {
       <DayInfo />
 
       {/* Today's Cards */}
-      <div className="grid w-full max-w-2xl gap-6 md:grid-cols-2">
+      <div className="grid w-full max-w-4xl gap-6 md:grid-cols-2">
         <WordCard />
         <SentenceCard />
       </div>
