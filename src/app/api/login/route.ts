@@ -4,7 +4,7 @@ import { LoginSchema } from '@/validators/auth';
 import { getUserByUsername } from '@/backend/models/users';
 import { createAuthToken } from '@/backend/utils/auth';
 import { isDev, isMockUser } from '@/backend/utils/env';
-import { MOCKED_USER } from '@/libs/msw/mock/users';
+import { MOCKED_USER_ID } from '@/libs/msw/mock/users';
 
 function createLoginResponse(token: string, message: string) {
   const res = NextResponse.json({ message });
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   const { username, password } = parsed.data;
 
   if (isMockUser(username)) {
-    const token = await createAuthToken({ id: MOCKED_USER.id });
+    const token = await createAuthToken({ id: MOCKED_USER_ID });
     return createLoginResponse(token, 'Mock login success');
   }
 

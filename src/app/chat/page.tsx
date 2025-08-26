@@ -19,7 +19,6 @@ async function ChatPage() {
   });
 
   const dehydratedState = dehydrate(queryClient);
-  // console.log('dehydratedState', dehydratedState);
 
   return (
     <QueryProvider dehydratedState={dehydratedState}>
