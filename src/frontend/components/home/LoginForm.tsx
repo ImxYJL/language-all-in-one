@@ -26,7 +26,7 @@ const LoginForm = () => {
       { username: trimmedUsername, password: trimmedPassword },
       {
         onSuccess: () => {
-          window.location.href = '/dashboard';
+          window.location.href = '/chat';
         },
       },
     );
