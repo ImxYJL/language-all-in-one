@@ -12,7 +12,7 @@ import {
   WnRelatedSchema,
 } from './wordnik.schemas';
 import httpClient from '@/backend/utils/httpClient';
-import { isHttpClientError, UpstreamError } from '@/backend/utils/error/error';
+import { UpstreamError } from '@/backend/utils/error/error';
 import { QueryParamValue } from '@/types/request';
 
 export interface GetDefinitionsParams {
@@ -45,18 +45,10 @@ export class WordnikClient extends BaseApiClient {
     schema: z.ZodType<T>,
     options?: RequestInit,
   ): Promise<T> {
-    try {
-      const response = await httpClient(url, options);
-      return await this.parseJsonResponse<T>(response, schema);
-    } catch (error) {
-      if (isHttpClientError(error)) {
-        // 저수준 HttpClientError를 고수준 UpstreamError로 변환해 컨텍스트를 추가
-        const bodyText = await error.response.text().catch(() => ''); // body 읽기 실패 시 빈 문자열
-        throw new UpstreamError(error.status, resource, `Wordnik API request for '${resource}' failed.`, bodyText);
-      }
-      // HttpClientError가 아닌 다른 에러는 그대로 다시 던짐
-      throw error;
-    }
+    const response = await httpClient(url, options);
+    await this.checkResponseOk(response, resource); // 에러인 경우 UpstreamError 발생
+
+    return this.parseJsonResponse<T>(response, schema); // 성공일 때만 zod parse
   }
 
   // --- Public API Methods ---
