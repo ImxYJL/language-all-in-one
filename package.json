@@ -24,6 +24,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.1.11",
+    "wink-lemmatizer": "^3.0.4",
     "zod": "^4.0.5"
   },
   "devDependencies": {
