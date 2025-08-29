@@ -1,4 +1,4 @@
 export const ENDPOINT = {
   login: '/login',
-  getRandomWord: '/word',
+  getRandomWord: '/wordnik',
 } as const;
