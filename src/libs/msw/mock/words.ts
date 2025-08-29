@@ -1,4 +1,4 @@
-import { AppWordBundle } from '@/types/word';
+import { AppWordBundle } from '@/types/wordnik';
 
 export const MOCKED_RANDOM_WORD: AppWordBundle = {
   word: 'squaller (MOCKED)',

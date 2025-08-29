@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { MOCKED_RANDOM_WORD } from '../mock/words';
 
 const getRandomWord = () =>
-  http.get('/api/word', () => {
+  http.get('/api/wordnik', () => {
     return HttpResponse.json(MOCKED_RANDOM_WORD);
   });
 

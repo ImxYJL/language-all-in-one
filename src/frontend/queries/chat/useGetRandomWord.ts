@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEY } from '../queryKeys';
-import { getRandomWordApi } from '@/apis/word';
+import { getRandomWordApi } from '@/apis/wordnik';
 import { formatKstYmd } from '@/app/utils/times';
 
 const useGetRandomWord = () => {
