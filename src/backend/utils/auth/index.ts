@@ -14,7 +14,7 @@ type AuthPayload = {
 
 export async function createAuthToken(payload: AuthPayload, expiresIn = '1h') {
   const secret = new TextEncoder().encode(serverEnv.JWT_SECRET_KEY);
-  return new SignJWT({ ...payload, sub: payload.id })
+  return new SignJWT({ ...payload, sub: payload.id, role: 'authenticated' })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuer(serverEnv.JWT_ISSUER)
     .setAudience(serverEnv.JWT_AUDIENCE)
