@@ -1,4 +1,4 @@
-import { getRandomWordApi } from '@/apis/word';
+import { getRandomWordApi } from '@/apis/wordnik';
 import { ChatContent, ChatInput } from '@/frontend/components/chat';
 import { QueryProvider } from '@/frontend/providers';
 import { QUERY_KEY } from '@/frontend/queries/queryKeys';
