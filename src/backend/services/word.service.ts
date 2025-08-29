@@ -1,7 +1,7 @@
-import type { AppDefinition, AppWordBundle } from '@/types/word';
+import type { AppDefinition, AppWordBundle } from '@/types/wordnik';
 import { wordnikClient } from '@/backend/clients/wordnik/wordnik.clients';
 import type { WnDefinition } from '@/backend/clients/wordnik/wordnik.schemas';
-import { getCachedRandomWord } from '../cache/word.cache';
+import { getCachedRandomWord } from '../cache/wordnik.cache';
 
 function hasText(d: WnDefinition): d is WnDefinition & { text: string } {
   return typeof d.text === 'string' && d.text.length > 0;
