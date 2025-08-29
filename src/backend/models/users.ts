@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabase/client';
+import { adminSupabase } from '@/libs/supabase/client';
 
 interface GetUserByUsernameResponse {
   id: string;
@@ -6,7 +6,7 @@ interface GetUserByUsernameResponse {
 }
 
 export async function getUserByUsername(username: string): Promise<GetUserByUsernameResponse | null> {
-  const { data, error } = await supabase.from('users').select('*').eq('username', username).single();
+  const { data, error } = await adminSupabase.from('users').select('*').eq('username', username).single();
 
   if (error) return null;
   return data;

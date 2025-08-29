@@ -1,4 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import { serverEnv } from '@/validators/env';
+import 'server-only';
 
-export const supabase = createClient(serverEnv.SUPABASE_URL, serverEnv.SUPABASE_ANON_KEY);
+import { serverEnv } from '@/validators/env';
+import { createClient } from '@supabase/supabase-js';
+
+export const adminSupabase = createClient(serverEnv.SUPABASE_URL, serverEnv.SUPABASE_SERVICE_ROLE_KEY, {
+  auth: { persistSession: false },
+});
