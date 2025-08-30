@@ -1,7 +1,6 @@
 import { QueryProvider } from '@/frontend/providers';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import startMockWorker from '@/libs/msw/startMockWorker';
-import { cookies } from 'next/headers';
 
 startMockWorker();
 

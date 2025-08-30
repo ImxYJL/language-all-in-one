@@ -6,19 +6,17 @@ export const CreateVocabularySchema = z.object({
   tags: z.array(z.string().min(1)).optional(),
 });
 
+const ExampleSchema = z.object({
+  text: z.string().min(1),
+  source: z.string().nullable().optional(),
+  message_id: z.uuid().nullable().optional(),
+});
+
 export const CreateWordSchema = CreateVocabularySchema.extend({
   headword: z.string().min(1),
   lemma: z.string().optional(), // 없으면 서버에서 계산
   phonetic: z.string().optional(),
-  examples: z
-    .array(
-      z.object({
-        text: z.string().min(1),
-        source: z.string().optional(),
-        message_id: z.uuid().optional(),
-      }),
-    )
-    .optional(),
+  examples: z.array(ExampleSchema).nullable().optional(),
 });
 
 export const CreateSentenceBundleSchema = CreateVocabularySchema.extend({
@@ -29,3 +27,4 @@ export const CreateSentenceBundleSchema = CreateVocabularySchema.extend({
 });
 
 export type CreateWordInput = z.infer<typeof CreateWordSchema>;
+export type ExampleInput = z.infer<typeof ExampleSchema>;
