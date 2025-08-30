@@ -10,6 +10,7 @@ export function hasNumber<K extends string>(k: K) {
 
 // 외부 에러 호환용
 export const hasStatus = hasNumber('status');
+
 export function hasResponseStatus(v: unknown): v is { response: { status: number } } {
   return isRecord(v) && isRecord(v.response) && typeof v.response.status === 'number';
 }
@@ -23,9 +24,8 @@ export function isJwk(value: unknown): value is JWK {
     return false;
   }
 
-
   const hasKty = 'kty' in value && typeof (value as JWK).kty === 'string';
-  const hasKid = 'kid' in value && typeof (value as JWK).kid === 'string'; 
+  const hasKid = 'kid' in value && typeof (value as JWK).kid === 'string';
 
   return hasKty && hasKid;
 }
