@@ -1,65 +1,62 @@
 import 'server-only';
 
-import { jwtVerify, SignJWT } from 'jose';
+import { importJWK, jwtVerify, SignJWT, type JWTPayload, JWK } from 'jose';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
-import { getRealUserId } from '@/backend/utils/env';
 import { serverEnv } from '@/validators/env';
-
-type AuthPayload = {
-  id: string; // 사용자 uuid
-  role?: string;
-  [key: string]: unknown;
-};
-
-export async function createAuthToken(payload: AuthPayload, expiresIn = '1h') {
-  const secret = new TextEncoder().encode(serverEnv.JWT_SECRET_KEY);
-  return new SignJWT({ ...payload, sub: payload.id, role: 'authenticated' })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-    .setIssuer(serverEnv.JWT_ISSUER)
-    .setAudience(serverEnv.JWT_AUDIENCE)
-    .setExpirationTime(expiresIn)
-    .sign(secret);
-}
+import { getRealUserId } from '@/backend/utils/env';
+import { isJwk } from '../typeGuard';
 
 export type ParsedAuthUser = {
   id: string;
-  isValid: boolean; // 서명/만료/iss/aud 검증 통과 여부
-  isRealUser: boolean; // uuid 규칙상 실유저인지
-  isMockUser: boolean; // uuid 규칙상 모킹인지
+  isValid: true;
+  isRealUser: boolean;
+  isMockUser: boolean;
+  payload: JWTPayload;
 };
 
-// Bearer 헤더 문자열에서 토큰만 뽑는 보조 함수
-function readBearer(auth?: string | null): string | undefined {
-  if (!auth) return;
+type AuthPayload = { id: string; [k: string]: unknown };
 
-  const [scheme, ...rest] = auth.split(' ');
-  if (scheme?.toLowerCase() !== 'bearer') return;
+const JWT_ALG = 'ES256' as const;
 
-  const token = rest.join(' ').trim();
-  return token || undefined;
+const parsedJwk = JSON.parse(serverEnv.SIGNING_PRIVATE_JWK);
+if (!isJwk(parsedJwk)) {
+  throw new Error('Invalid SIGNING_PRIVATE_JWK in environment variables. It is not a valid JWK format.');
 }
 
-// req가 있으면(CSR 도중 요청) req.cookies(동기) 우선, 없으면(SSR 도중 요청) await cookies() 사용
-export async function getAuthUser(req?: NextRequest) {
-  const tokenFromHeader = readBearer(req?.headers.get('authorization'));
-  const tokenFromCookie = req ? req.cookies.get('token')?.value : (await cookies()).get('token')?.value;
+const privateJwk: JWK = parsedJwk;
+const signKeyPromise = importJWK(privateJwk, JWT_ALG);
 
-  const token = tokenFromHeader ?? tokenFromCookie;
-  if (!token) return null;
+// public key 파생(검증용)
+const { kty, crv, x, y, kid } = privateJwk;
+const publicJwk: JWK = { kty, crv, x, y, alg: JWT_ALG, use: 'sig', kid };
+const verifyKeyPromise = importJWK(publicJwk, JWT_ALG);
 
-  return verifyAuthToken(token);
+export async function createAuthToken(payload: AuthPayload, expiresIn = '1h') {
+  const signKey = await signKeyPromise;
+
+  return await new SignJWT({
+    ...payload,
+    sub: String(payload.id),
+    role: 'authenticated',
+    aud: serverEnv.JWT_AUDIENCE,
+  })
+    .setProtectedHeader({ alg: 'ES256', kid })
+    .setIssuer(serverEnv.JWT_ISSUER)
+    .setIssuedAt()
+    .setExpirationTime(expiresIn)
+    .sign(signKey);
 }
 
-export async function verifyAuthToken(token: string): Promise<ParsedAuthUser | null> {
+export async function verifyCustomToken(token: string): Promise<ParsedAuthUser | null> {
   try {
-    const secret = new TextEncoder().encode(serverEnv.JWT_SECRET_KEY);
-    const { payload } = await jwtVerify(token, secret, {
+    const verifyKey = await verifyKeyPromise;
+    
+    const { payload } = await jwtVerify(token, verifyKey, {
       issuer: serverEnv.JWT_ISSUER,
       audience: serverEnv.JWT_AUDIENCE,
-      algorithms: ['HS256'],
+      algorithms: [JWT_ALG],
     });
-
     const id = payload.sub;
     if (!id) return null;
 
@@ -67,8 +64,27 @@ export async function verifyAuthToken(token: string): Promise<ParsedAuthUser | n
     const isRealUser = !!realId && id === realId;
     const isMockUser = !isRealUser;
 
-    return { id, isValid: true, isRealUser, isMockUser };
+    return { id, isValid: true, isRealUser, isMockUser, payload };
   } catch {
     return null;
   }
+}
+
+export function readBearer(auth?: string | null): string | undefined {
+  if (!auth) return;
+
+  const [scheme, ...rest] = auth.split(' ');
+  if (scheme?.toLowerCase() !== 'bearer') return;
+
+  return rest.join(' ').trim() || undefined;
+}
+
+export async function getAuthUser(req?: NextRequest): Promise<ParsedAuthUser | null> {
+  const tokenFromHeader = readBearer(req?.headers.get('authorization'));
+  const tokenFromCookie = req ? req.cookies.get('token')?.value : (await cookies()).get('token')?.value;
+
+  const token = tokenFromHeader ?? tokenFromCookie;
+  if (!token) return null;
+
+  return verifyCustomToken(token);
 }
