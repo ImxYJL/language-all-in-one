@@ -3,6 +3,7 @@ import type { CreateWordInput, ExampleInput } from '../clients/word/vocabulary.s
 
 export function mapExamples(examples?: ExampleInput[] | null) {
   if (!examples) return null;
+
   return examples.map((e) => ({
     text: e.text,
     source: e.source ?? null,
@@ -10,14 +11,13 @@ export function mapExamples(examples?: ExampleInput[] | null) {
   }));
 }
 
-// 단어 추가
 export async function addWord(supabase: SupabaseClient, userId: string, params: CreateWordInput & { lemma: string }) {
   const p_examples =
     params.examples?.map((e) => ({
       text: e.text,
       source: e.source ?? null,
       message_id: e.message_id ?? null,
-    })) ?? null; // ⬅️ undefined → null
+    })) ?? null;
 
   const { data, error } = await supabase.rpc('create_item_v2', {
     p_user_id: userId,
@@ -27,13 +27,13 @@ export async function addWord(supabase: SupabaseClient, userId: string, params: 
     p_phonetic: params.phonetic ?? null,
     p_favorited: params.favorited ?? false,
     p_tags: params.tags ?? null,
-    p_examples, // ⬅️ null 또는 jsonb[]
+    p_examples,
   });
   if (error) throw error;
   return { itemId: data as string };
 }
 
-// 문장 추가 (스키마에 맞게 headword를 본문으로 사용)
+// TODO: 추후 스키마대로 사용하기
 export type CreateSentenceInput = {
   headword: string;
   phonetic?: string | null;

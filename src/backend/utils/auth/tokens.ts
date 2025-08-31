@@ -16,5 +16,6 @@ export async function getAuthToken(req?: NextRequest, cookieName = 'token') {
 
   if (req) return req.cookies.get(cookieName)?.value;
   const store = await getCookies();
+
   return store.get(cookieName)?.value;
 }

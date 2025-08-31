@@ -5,10 +5,10 @@ import { getErrorMessage, getHttpStatus } from '@/backend/utils/error/error';
 import { requireAuth } from '@/backend/utils/auth/guards';
 
 export async function GET(req: NextRequest) {
-  const guard = await requireAuth(req);
-  if (guard instanceof Response) return guard;
-  const { user } = guard;
+  const result = await requireAuth(req);
+  if (!result.ok) return result.response;
 
+  const { user } = result;
   if (user.isMockUser) return NextResponse.json(MOCKED_RANDOM_WORD);
 
   try {
