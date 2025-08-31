@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/backend/utils/auth';
+import { readBearer } from '@/backend/utils/auth';
 
-export async function middleware(request: NextRequest) {
-  const parsedReq = await getAuthUser(request);
+export async function middleware(req: NextRequest) {
+  const token = readBearer(req.headers.get('authorization')) ?? req.cookies.get('token')?.value;
 
-  const isValid = parsedReq ?? null;
-  if (!isValid) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (!token) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/';
+    url.searchParams.set('redirect', req.nextUrl.pathname + req.nextUrl.search);
+
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
+// '/vocabulary/:path*'
 export const config = {
   matcher: ['/dashboard/:path*', '/chat/:path*'],
 };
