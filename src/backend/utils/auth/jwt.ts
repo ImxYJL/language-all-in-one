@@ -31,7 +31,7 @@ export async function verifyCustomToken(token: string): Promise<ParsedAuthUser |
 
     const realId = getRealUserId();
     const isRealUser = !!realId && payload.sub === realId;
-    
+
     return { id: payload.sub, isValid: true, isRealUser, isMockUser: !isRealUser, payload };
   } catch {
     return null;

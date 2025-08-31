@@ -7,9 +7,10 @@ import { getErrorMessage, getHttpStatus } from '@/backend/utils/error/error';
 import { requireAuth } from '@/backend/utils/auth/guards';
 
 export async function POST(req: NextRequest) {
-  const guard = await requireAuth(req, { requireRealUser: true });
-  if (guard instanceof Response) return guard;
-  const { user, token } = guard;
+  const result = await requireAuth(req, { requireRealUser: true });
+  if (!result.ok) return result.response;
+
+  const { user, token } = result;
 
   try {
     const body = await req.json();
