@@ -1,6 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
-import { UpstreamError } from '../utils/error/error';
+import { UpstreamError } from '../error';
 
 export abstract class BaseApiClient {
   protected readonly baseUrl: string;
