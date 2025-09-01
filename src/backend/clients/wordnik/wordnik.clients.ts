@@ -12,8 +12,8 @@ import {
   WnRelatedSchema,
 } from './wordnik.schemas';
 import httpClient from '@/backend/utils/httpClient';
-import { UpstreamError } from '@/backend/utils/error/error';
 import { QueryParamValue } from '@/types/request';
+import { UpstreamError } from '@/backend/error';
 
 export interface GetDefinitionsParams {
   limit?: number;

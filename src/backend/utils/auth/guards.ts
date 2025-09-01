@@ -1,51 +1,23 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getAuthToken } from './tokens';
 import { verifyCustomToken } from './jwt';
-import { ParsedAuthUser } from '.';
+import type { ParsedAuthUser } from './types';
+import { AppError } from '@/backend/error/app';
 
-type AuthedUser = Pick<ParsedAuthUser, 'id' | 'isMockUser'>;
+export type AuthedUser = Pick<ParsedAuthUser, 'id' | 'isMockUser'>;
 
-export type AuthSuccess = {
-  ok: true;
-  user: AuthedUser;
-  token: string;
-};
-
-export type AuthFailure = {
-  ok: false;
-  reason: 'no_token' | 'unauthorized' | 'forbidden';
-  response: NextResponse;
-};
-
-export type AuthResult = AuthSuccess | AuthFailure;
-
-export async function requireAuth(req: NextRequest, opts?: { requireRealUser?: boolean }): Promise<AuthResult> {
+export async function requireAuth(req: NextRequest, opts?: { requireRealUser?: boolean }) {
   const token = await getAuthToken(req);
-  if (!token) {
-    return {
-      ok: false,
-      reason: 'no_token',
-      response: NextResponse.json({ message: 'Unauthorized: No token provided' }, { status: 401 }),
-    };
-  }
+  if (!token) throw AppError.unauthorized();
 
   const userInfo = await verifyCustomToken(token);
-  if (!userInfo) {
-    return {
-      ok: false,
-      reason: 'unauthorized',
-      response: NextResponse.json({ message: 'Unauthorized: Invalid token' }, { status: 401 }),
-    };
-  }
+  if (!userInfo) throw AppError.unauthorized();
 
   if (opts?.requireRealUser && userInfo.isMockUser) {
-    return {
-      ok: false,
-      reason: 'forbidden',
-      response: NextResponse.json({ message: 'Forbidden: Mock user not allowed' }, { status: 403 }),
-    };
+    throw AppError.forbidden('Mock user not allowed');
   }
 
-  return { ok: true, token, user: { id: userInfo.id, isMockUser: userInfo.isMockUser } };
+  const authedUserInfo: AuthedUser = { id: userInfo.id, isMockUser: userInfo.isMockUser };
+
+  return { token, authedUserInfo };
 }
