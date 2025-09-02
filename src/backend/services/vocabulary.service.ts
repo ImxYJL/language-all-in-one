@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CreateWordInput, ExampleInput } from '../clients/word/vocabulary.schemas';
+import type { CreateSentenceInput, CreateWordInput, ExampleInput } from '../clients/word/vocabulary.schemas';
 
+// TODO: as 없애기
 export function mapExamples(examples?: ExampleInput[] | null) {
   if (!examples) return null;
 
@@ -11,67 +12,48 @@ export function mapExamples(examples?: ExampleInput[] | null) {
   }));
 }
 
-export async function addWord(supabase: SupabaseClient, userId: string, params: CreateWordInput & { lemma: string }) {
-  const p_examples =
-    params.examples?.map((e) => ({
-      text: e.text,
-      source: e.source ?? null,
-      message_id: e.message_id ?? null,
-    })) ?? null;
+type AddItemReturn = Promise<{ itemId: string }>;
 
-  const { data, error } = await supabase.rpc('create_item_v2', {
-    p_user_id: userId,
-    p_item_type: 'word',
-    p_lemma: params.lemma,
-    p_headword: params.headword ?? null,
+export async function addWord(db: SupabaseClient, params: CreateWordInput): AddItemReturn {
+  const p_examples = params.examples ?? null;
+  const { data, error } = await db.rpc('create_word_v3', {
+    p_headword: params.headword,
+    p_lemma: params.lemma ?? null,
     p_phonetic: params.phonetic ?? null,
     p_favorited: params.favorited ?? false,
     p_tags: params.tags ?? null,
     p_examples,
   });
   if (error) throw error;
-  return { itemId: data as string };
+
+  return { itemId: data };
 }
 
-// TODO: 추후 스키마대로 사용하기
-export type CreateSentenceInput = {
-  headword: string;
-  phonetic?: string | null;
-  tags?: string[] | null;
-  examples?: ExampleInput[] | null;
-  favorited?: boolean | null;
-  lemma?: string | null; // 필요 없다면 호출에서 headword로 대체
-};
-
-export async function addSentence(
-  supabase: SupabaseClient,
-  userId: string,
-  params: CreateSentenceInput & { lemma: string },
-) {
-  const { data, error } = await supabase.rpc('create_sentence_v2', {
-    p_user_id: userId,
-    p_lemma: params.lemma,
-    p_headword: params.headword ?? null,
-    p_phonetic: params.phonetic ?? null,
+export async function addSentence(db: SupabaseClient, params: CreateSentenceInput): AddItemReturn {
+  const { data, error } = await db.rpc('create_sentence_v2', {
+    p_text: params.text,
+    p_translation: params.translation ?? null,
+    p_formality: params.formality ?? null,
+    p_source: params.source ?? null,
     p_tags: params.tags ?? null,
-    p_examples: mapExamples(params.examples),
     p_favorited: params.favorited ?? false,
   });
   if (error) throw error;
-  return { itemId: data as string };
+
+  return { itemId: data };
 }
 
-// 즐겨찾기 토글/설정
+type ToggleRow = { item_id: string; favorited: boolean; favorited_at: string | null };
+
 export async function toggleFavorite(
   supabase: SupabaseClient,
   itemId: string,
-  value?: boolean, // 전달하면 강제값, 없으면 토글
-) {
-  const { data, error } = await supabase.rpc('toggle_item_favorite', {
-    p_item_id: itemId,
-    p_force_value: value ?? null,
-  });
+  value: boolean,
+): Promise<ToggleRow | null> {
+  const { data, error } = await supabase.rpc('toggle_item_favorite', { p_item_id: itemId, p_force_value: value });
   if (error) throw error;
-  // data는 { item_id, favorited, favorited_at } 한 행
-  return data as { item_id: string; favorited: boolean; favorited_at: string | null };
+
+  const row = Array.isArray(data) ? data[0] : data; // RETURN Table 형식에 맞춘 정규화
+
+  return row ?? null;
 }
