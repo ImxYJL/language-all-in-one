@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FORMALITY_TYPE, ITEM_TYPE, ITEM_TYPES } from './vocabulary.constants';
+import { FORMALITY_TYPE, ITEM_TYPE, ITEM_TYPES, ITEMS_PER_VOCABULARY_PAGE } from './vocabulary.constants';
 
 // 단어, 문장의 공통 스키마
 const CreateVocabularySchema = z.object({
@@ -9,7 +9,7 @@ const CreateVocabularySchema = z.object({
 });
 
 // 단어 예문
-const ExampleSchema = z.object({
+export const ExampleSchema = z.object({
   text: z.string().min(1),
   source: z.string().nullable().optional(),
   message_id: z.uuid().nullable().optional(),
@@ -18,6 +18,7 @@ const ExampleSchema = z.object({
 export const CreateWordSchema = CreateVocabularySchema.extend({
   itemType: z.literal(ITEM_TYPE.word).default(ITEM_TYPE.word),
   headword: z.string().min(1),
+  meaningKo: z.string().optional(),
   lemma: z.string().optional(), // 없으면 서버에서 계산
   phonetic: z.string().optional(),
   examples: z.array(ExampleSchema).nullable().optional(),
@@ -33,6 +34,44 @@ export const CreateSentenceSchema = CreateVocabularySchema.extend({
   formality: FormalitySchema.nullable().optional(),
 });
 
-export type CreateWordInput = z.infer<typeof CreateWordSchema>;
-export type CreateSentenceInput = z.infer<typeof CreateSentenceSchema>;
-export type ExampleInput = z.infer<typeof ExampleSchema>;
+export const VocaListRequestSchema = z.object({
+  favorited: z.enum(['true', 'false']).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(ITEMS_PER_VOCABULARY_PAGE),
+  afterId: z.uuid().optional(),
+});
+
+/**
+ * -ItemSchema: 목록에 보여줄 간단한 형태의 스키마
+ */
+export const WordItemSchema = z.object({
+  id: z.uuid(),
+  favorited: z.boolean(),
+  word: z.object({
+    headword: z.string().nullable(),
+    meaningKo: z.string().nullable(),
+  }),
+});
+// TODO: 추후 상세 모달 추가
+// const WordDetailSchema = WordItemSchema.extend
+
+export const SentenceItemSchema = z.object({
+  id: z.uuid(),
+  favorited: z.boolean(),
+  sentence: z.object({
+    text: z.string().min(1),
+    translation: z.string().nullable().optional(),
+    formality: FormalitySchema.nullable().optional(),
+  }),
+});
+
+export const NextVocaCursorSchema = z.object({ afterId: z.uuid() }).nullable();
+
+export const WordListResponseSchema = z.object({
+  items: z.array(WordItemSchema),
+  next: NextVocaCursorSchema,
+});
+
+export const SentenceListResponseSchema = z.object({
+  items: z.array(SentenceItemSchema),
+  next: NextVocaCursorSchema,
+});

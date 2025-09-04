@@ -7,6 +7,7 @@ import { requireAuth } from '@/backend/utils/auth/guards';
 import { ZodError } from 'zod';
 import { AppError, handleRouteError } from '@/backend/error/app';
 import { isUniqueViolation } from '@/backend/error/db';
+import { handleGetVocaList } from '../items/list';
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,4 +32,8 @@ export async function POST(req: NextRequest) {
     }
     return handleRouteError(e);
   }
+}
+
+export async function GET(req: NextRequest) {
+  return handleGetVocaList(req, 'word');
 }

@@ -9,5 +9,4 @@ export const FORMALITY_TYPE = {
   etc: 'etc',
 } as const;
 
-export type ItemType = (typeof ITEM_TYPES)[number];
-export type FormalityType = keyof typeof FORMALITY_TYPE;
+export const ITEMS_PER_VOCABULARY_PAGE = 20;

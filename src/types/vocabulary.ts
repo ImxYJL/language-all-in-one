@@ -4,6 +4,8 @@ import {
   CreateWordSchema,
   ExampleSchema,
   VocaListRequestSchema,
+  WordListResponseSchema,
+  SentenceListResponseSchema,
 } from '@/backend/clients/word/vocabulary.schemas';
 import z from 'zod';
 
@@ -14,3 +16,6 @@ export type CreateWordInput = z.infer<typeof CreateWordSchema>;
 export type CreateSentenceInput = z.infer<typeof CreateSentenceSchema>;
 export type ExampleInput = z.infer<typeof ExampleSchema>;
 export type VocaListRequest = z.infer<typeof VocaListRequestSchema>;
+
+export type WordListResponse = z.infer<typeof WordListResponseSchema>;
+export type SentenceListResponse = z.infer<typeof SentenceListResponseSchema>;
