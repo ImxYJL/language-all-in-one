@@ -48,7 +48,7 @@ export const WordItemSchema = z.object({
   favorited: z.boolean(),
   word: z.object({
     headword: z.string().nullable(),
-    meaningKo: z.string().nullable(),
+    meaningKo: z.string().nullable().optional(),
   }),
 });
 // TODO: 추후 상세 모달 추가
