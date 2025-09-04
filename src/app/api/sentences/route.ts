@@ -6,6 +6,7 @@ import { AppError, handleRouteError } from '@/backend/error/app';
 import { isUniqueViolation } from '@/backend/error/db';
 import { CreateSentenceSchema } from '@/backend/clients/word/vocabulary.schemas';
 import { addSentence } from '@/backend/services/vocabulary.service';
+import { handleGetVocaList } from '../items/list';
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,4 +28,8 @@ export async function POST(req: NextRequest) {
     }
     return handleRouteError(e);
   }
+}
+
+export async function GET(req: NextRequest) {
+  return handleGetVocaList(req, 'sentence');
 }
