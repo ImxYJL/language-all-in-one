@@ -39,39 +39,3 @@ export const VocaListRequestSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(ITEMS_PER_VOCABULARY_PAGE),
   afterId: z.uuid().optional(),
 });
-
-/**
- * -ItemSchema: 목록에 보여줄 간단한 형태의 스키마
- */
-export const WordItemSchema = z.object({
-  id: z.uuid(),
-  favorited: z.boolean(),
-  word: z.object({
-    headword: z.string().nullable(),
-    meaningKo: z.string().nullable().optional(),
-  }),
-});
-// TODO: 추후 상세 모달 추가
-// const WordDetailSchema = WordItemSchema.extend
-
-export const SentenceItemSchema = z.object({
-  id: z.uuid(),
-  favorited: z.boolean(),
-  sentence: z.object({
-    text: z.string().min(1),
-    translation: z.string().nullable().optional(),
-    formality: FormalitySchema.nullable().optional(),
-  }),
-});
-
-export const NextVocaCursorSchema = z.object({ afterId: z.uuid() }).nullable();
-
-export const WordListResponseSchema = z.object({
-  items: z.array(WordItemSchema),
-  next: NextVocaCursorSchema,
-});
-
-export const SentenceListResponseSchema = z.object({
-  items: z.array(SentenceItemSchema),
-  next: NextVocaCursorSchema,
-});
