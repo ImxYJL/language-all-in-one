@@ -4,18 +4,52 @@ import {
   CreateWordSchema,
   ExampleSchema,
   VocaListRequestSchema,
-  WordListResponseSchema,
-  SentenceListResponseSchema,
 } from '@/backend/clients/word/vocabulary.schemas';
 import z from 'zod';
 
 export type ItemType = (typeof ITEM_TYPES)[number];
 export type FormalityType = keyof typeof FORMALITY_TYPE;
 
+// 유저 입력 타입
 export type CreateWordInput = z.infer<typeof CreateWordSchema>;
 export type CreateSentenceInput = z.infer<typeof CreateSentenceSchema>;
 export type ExampleInput = z.infer<typeof ExampleSchema>;
 export type VocaListRequest = z.infer<typeof VocaListRequestSchema>;
 
-export type WordListResponse = z.infer<typeof WordListResponseSchema>;
-export type SentenceListResponse = z.infer<typeof SentenceListResponseSchema>;
+// 응답 타입
+export type ToggleFavoriteResponse = { item_id: string; favorited: boolean; favorited_at: string | null };
+export type AddItemResponse = Promise<{ itemId: string }>;
+
+export type WordItemType = {
+  id: string;
+  favorited: boolean;
+  word: {
+    headword: string;
+    meaningKo: string | null;
+  };
+};
+// TODO: 추후 상세 모달 추가
+// const WordDetailType = WordItemType &
+
+export type SentenceItemType = {
+  id: string;
+  favorited: boolean;
+  sentence: {
+    text: string;
+    translation: string | null;
+  };
+};
+
+export type NextVocaCursor = {
+  afterId: string;
+} | null;
+
+export type WordListResponse = {
+  items: WordItemType[];
+  next: NextVocaCursor;
+};
+
+export type SentenceListResponse = {
+  items: SentenceItemType[];
+  next: NextVocaCursor;
+};
