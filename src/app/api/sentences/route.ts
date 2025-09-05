@@ -4,9 +4,8 @@ import { requireAuth } from '@/backend/utils/auth/guards';
 import { ZodError } from 'zod';
 import { AppError, handleRouteError } from '@/backend/error/app';
 import { isUniqueViolation } from '@/backend/error/db';
-import { CreateSentenceSchema } from '@/backend/clients/word/vocabulary.schemas';
-import { addSentence } from '@/backend/services/vocabulary.service';
-import { handleGetVocaList } from '../items/list';
+import { CreateSentenceSchema, VocaListRequestSchema } from '@/backend/clients/word/vocabulary.schemas';
+import { addSentence, getVocabList } from '@/backend/services/vocabulary.service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,5 +30,19 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  return handleGetVocaList(req, 'sentence');
+  try {
+    const { dbToken } = await requireAuth(req, { requireRealUser: true });
+    const db = createRlsSupabase(dbToken);
+
+    const parsedQueryParam = VocaListRequestSchema.parse(Object.fromEntries(new URL(req.url).searchParams));
+    const result = await getVocabList(db, 'sentence', { ...parsedQueryParam });
+
+    return NextResponse.json(result, { status: 200 });
+  } catch (e) {
+    if (e instanceof ZodError) {
+      return handleRouteError(AppError.validation());
+    }
+
+    return handleRouteError(e);
+  }
 }

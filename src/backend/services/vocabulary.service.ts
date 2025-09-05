@@ -2,12 +2,14 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { ITEMS_PER_VOCABULARY_PAGE } from '../clients/word/vocabulary.constants';
 import {
+  AddItemResponse,
   CreateSentenceInput,
   CreateWordInput,
   ExampleInput,
   FormalityType,
   ItemType,
   SentenceListResponse,
+  ToggleFavoriteResponse,
   VocaListRequest,
   WordListResponse,
 } from '@/types/vocabulary';
@@ -23,9 +25,7 @@ export function mapExamples(examples?: ExampleInput[] | null) {
   }));
 }
 
-type AddItemReturn = Promise<{ itemId: string }>;
-
-export async function addWord(db: SupabaseClient, params: CreateWordInput): AddItemReturn {
+export async function addWord(db: SupabaseClient, params: CreateWordInput): AddItemResponse {
   const p_examples = params.examples ?? null;
   const { data, error } = await db.rpc('create_word_v3', {
     p_headword: params.headword,
@@ -41,7 +41,7 @@ export async function addWord(db: SupabaseClient, params: CreateWordInput): AddI
   return { itemId: data };
 }
 
-export async function addSentence(db: SupabaseClient, params: CreateSentenceInput): AddItemReturn {
+export async function addSentence(db: SupabaseClient, params: CreateSentenceInput): AddItemResponse {
   const { data, error } = await db.rpc('create_sentence_v2', {
     p_text: params.text,
     p_translation: params.translation ?? null,
@@ -55,13 +55,11 @@ export async function addSentence(db: SupabaseClient, params: CreateSentenceInpu
   return { itemId: data };
 }
 
-type ToggleRow = { item_id: string; favorited: boolean; favorited_at: string | null };
-
 export async function toggleFavorite(
   supabase: SupabaseClient,
   itemId: string,
   value: boolean,
-): Promise<ToggleRow | null> {
+): Promise<ToggleFavoriteResponse | null> {
   const { data, error } = await supabase.rpc('toggle_item_favorite', { p_item_id: itemId, p_force_value: value });
   if (error) throw error;
 
@@ -77,14 +75,14 @@ type DbBaseRow = {
 };
 
 type DbWordCols = {
-  headword: string | null; // NOTE: ItemType이 Sentence인 경우 null
+  headword: string;
   meaning_ko: string | null;
   lemma: string | null;
   phonetic: string | null;
 };
 
 type DbSentenceCols = {
-  text: string | null; // headword와 마찬가지
+  text: string;
   translation: string | null;
   formality: FormalityType | null;
 };
@@ -93,9 +91,20 @@ export type DbListRow = DbBaseRow & DbWordCols & DbSentenceCols;
 
 export async function getVocabList(
   supabase: SupabaseClient,
+  itemType: 'word',
+  queryParam: VocaListRequest,
+): Promise<WordListResponse>;
+export async function getVocabList(
+  supabase: SupabaseClient,
+  itemType: 'sentence',
+  queryParam: VocaListRequest,
+): Promise<SentenceListResponse>;
+
+export async function getVocabList(
+  supabase: SupabaseClient,
   itemType: ItemType,
   queryParam: VocaListRequest,
-): Promise<WordListResponse | SentenceListResponse | null> {
+): Promise<WordListResponse | SentenceListResponse> {
   const { data, error } = await supabase
     .rpc('list_items_v1', {
       p_type: itemType,
@@ -109,36 +118,25 @@ export async function getVocabList(
   const rows = (data ?? []) as DbListRow[];
 
   if (itemType === 'word') {
-    const items = rows.map((r) => ({
-      id: r.item_id,
-      favorited: r.favorited,
-      word: {
-        headword: r.headword,
-        meaningKo: r.meaning_ko,
-        lemma: r.lemma,
-        phonetic: r.phonetic,
-      },
-    }));
-    const lastItem = items.at(-1);
-
-    return {
-      items,
-      next: lastItem ? { afterId: lastItem.id } : null,
-    };
+    const items = rows.map(mapRow.word);
+    return { items, next: makeNext(items.at(-1)?.id) };
   } else {
-    const items = rows.map((r) => ({
-      id: r.item_id,
-      favorited: r.favorited,
-      sentence: {
-        text: r.text ?? '',
-        translation: r.translation,
-      },
-    }));
-    const lastItem = items.at(-1);
-
-    return {
-      items,
-      next: lastItem ? { afterId: lastItem.id } : null,
-    };
+    const items = rows.map(mapRow.sentence);
+    return { items, next: makeNext(items.at(-1)?.id) };
   }
 }
+
+const mapRow = {
+  word: (r: DbListRow) => ({
+    id: r.item_id,
+    favorited: r.favorited,
+    word: { headword: r.headword, meaningKo: r.meaning_ko, lemma: r.lemma, phonetic: r.phonetic },
+  }),
+  sentence: (r: DbListRow) => ({
+    id: r.item_id,
+    favorited: r.favorited,
+    sentence: { text: r.text, translation: r.translation },
+  }),
+};
+
+const makeNext = (id?: string | undefined) => (id ? { afterId: id } : null);
