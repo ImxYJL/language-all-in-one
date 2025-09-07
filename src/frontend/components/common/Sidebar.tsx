@@ -24,7 +24,7 @@ const Sidebar = () => {
         <div className="flex-1 px-4">
           {/* Navigation Section */}
           <NavigationList title="이동하기">
-            <NavigationItem icon={BookOpen} label="오늘의 단어" href="#" />
+            <NavigationItem icon={BookOpen} label="단어장" href="/vocabulary" />
             <NavigationItem icon={MessageCircle} label="회화 학습 정리본" href="#" />
             <NavigationItem icon={Calendar} label="학습 캘린더" href="#" />
           </NavigationList>
