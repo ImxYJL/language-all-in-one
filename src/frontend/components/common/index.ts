@@ -9,3 +9,5 @@ export { default as NavigationItem } from './NavigationItem';
 export { default as SidebarToggleButton } from './SidebarToggleButton';
 export { default as LoadingBar } from './LoadingBar';
 export { default as SidebarHeader } from './SidebarHeader';
+export { default as BottomSheet } from './BottomSheet';
+export { default as Textarea } from './Textarea';
