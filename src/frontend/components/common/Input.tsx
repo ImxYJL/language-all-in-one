@@ -9,10 +9,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = ({ styleType = 'primary', className, ...props }: InputProps) => {
-  const base = 'w-full rounded-xl px-4 py-3 text-sm transition placeholder-gray-400';
+  const base = 'w-full rounded-xl px-4 py-3 text-base transition placeholder-gray-400';
 
   const variants = {
-    primary: 'border border-gray-300 focus:border-primary hover:border-primary focus:outline-none',
+    primary: 'border border-gray-300 hover:border-primary focus:border-primary focus:outline-none',
     custom: '',
   };
 
