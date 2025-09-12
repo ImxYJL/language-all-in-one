@@ -11,8 +11,10 @@ export type ItemType = (typeof ITEM_TYPES)[number];
 export type FormalityType = keyof typeof FORMALITY_TYPE;
 
 // 유저 입력 타입
-export type CreateWordInput = z.infer<typeof CreateWordSchema>;
-export type CreateSentenceInput = z.infer<typeof CreateSentenceSchema>;
+export type CreateWordInput = z.input<typeof CreateWordSchema>;
+export type CreateWordParsed = z.output<typeof CreateWordSchema>;
+export type CreateSentenceInput = z.input<typeof CreateSentenceSchema>;
+export type CreateSentenceParsed = z.output<typeof CreateSentenceSchema>;
 export type ExampleInput = z.infer<typeof ExampleSchema>;
 export type VocaListRequest = z.infer<typeof VocaListRequestSchema>;
 
