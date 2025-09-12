@@ -11,4 +11,5 @@ export { default as LoadingBar } from './LoadingBar';
 export { default as SidebarHeader } from './SidebarHeader';
 export { default as BottomSheet } from './BottomSheet';
 export { default as Textarea } from './Textarea';
-export {default as InputField} from './InputField';
+export { default as InputField } from './InputField';
+export { default as Switch } from './Switch';
