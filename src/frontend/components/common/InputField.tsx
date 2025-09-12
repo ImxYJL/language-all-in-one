@@ -6,12 +6,13 @@ interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   errorMessage?: string;
 }
 
-const InputField = ({ id, name, label, errorMessage, className, ...rest }: InputFieldProps) => {
+const InputField = ({ id, name, label, errorMessage, className, required, ...rest }: InputFieldProps) => {
   return (
     <div className="space-y-2">
       {label && (
         <label htmlFor={id} className="block text-base text-gray-700">
           {label}
+          {required && <span className="ml-1 text-gray-500">*</span>}
         </label>
       )}
 
