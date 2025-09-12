@@ -17,7 +17,7 @@ export const ExampleSchema = z.object({
 
 export const CreateWordSchema = CreateVocabularySchema.extend({
   itemType: z.literal(ITEM_TYPE.word).default(ITEM_TYPE.word),
-  headword: z.string().min(1),
+  headword: z.string().min(1, '한 글자 이상 입력해 주세요'),
   meaningKo: z.string().optional(),
   lemma: z.string().optional(), // 없으면 서버에서 계산
   phonetic: z.string().optional(),
@@ -28,7 +28,7 @@ export const FormalitySchema = z.enum(Object.keys(FORMALITY_TYPE));
 
 export const CreateSentenceSchema = CreateVocabularySchema.extend({
   itemType: z.literal(ITEM_TYPE.sentence).default(ITEM_TYPE.sentence),
-  text: z.string().min(1),
+  text: z.string().min(1, '한 글자 이상 입력해 주세요'),
   translation: z.string().nullable().optional(),
   source: z.string().nullable().optional(),
   formality: FormalitySchema.nullable().optional(),
