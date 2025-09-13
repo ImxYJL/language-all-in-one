@@ -6,10 +6,11 @@ import { BottomSheet } from '../common';
 import SentenceCreateForm from './SentenceCreateForm';
 import WordCreateForm from './WordCreateForm';
 import { Plus } from 'lucide-react';
+import VocaList from './VocaList';
 
 const VocaContent = () => {
   const [isWordTab, setIsWordTab] = useState(true);
-  const [isSheetOpen, setIsSheetOpen] = useState(true);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
   const toggleTab = () => setIsWordTab((prev) => !prev);
@@ -19,6 +20,8 @@ const VocaContent = () => {
   return (
     <div className="w-full">
       <TabList isWordTab={isWordTab} toggleTab={toggleTab} />
+
+      <VocaList />
 
       <BottomSheet isOpen={isSheetOpen} onClose={toggleSheet}>
         {isWordTab ? <WordCreateForm /> : <SentenceCreateForm />}
