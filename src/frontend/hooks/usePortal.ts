@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export const PORTAL_CONTAINER_ID = {
@@ -25,7 +25,9 @@ const ensureContainer = (containerId: string) => {
  * mountEl: 이 훅 인스턴스가 실제로 createPortal로 렌더링할 고유 div
  */
 export const usePortal = (containerKey: PortalContainerKey = 'modal') => {
+  const [isMounted, setIsMounted] = useState(false);
   const mountElRef = useRef<HTMLDivElement | null>(null);
+
   if (typeof document !== 'undefined' && !mountElRef.current) {
     mountElRef.current = document.createElement('div');
   }
@@ -37,6 +39,7 @@ export const usePortal = (containerKey: PortalContainerKey = 'modal') => {
     const containerEl = ensureContainer(containerId);
 
     containerEl.appendChild(mountElRef.current);
+    setIsMounted(true);
 
     return () => {
       // 자신의 자식 컴포넌트들만 제거
@@ -50,7 +53,7 @@ export const usePortal = (containerKey: PortalContainerKey = 'modal') => {
   }, [containerKey]);
 
   const Portal: React.FC<React.PropsWithChildren> = ({ children }) => {
-    if (typeof document === 'undefined' || !mountElRef.current) return null;
+    if (!isMounted || !mountElRef.current) return null;
 
     return createPortal(children, mountElRef.current);
   };
