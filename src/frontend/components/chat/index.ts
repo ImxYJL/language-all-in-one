@@ -1,6 +1,6 @@
 export { default as Overlay } from './Overlay';
 export { default as ChatList } from './ChatList';
-export { default as ChatItem } from './ChatItem';
+export { default as TabList } from './TabList';
 export { default as DayInfo } from './DayInfo';
 export { default as ChatInput } from './ChatInput';
 export { default as WelcomeSection } from './WelcomeSection';
