@@ -2,7 +2,7 @@
 
 // NOTE: ChatPageState Provider 외부라 리팩토링 필요
 import { useChatPageState } from '@/frontend/providers/ChatPageStateProvider';
-import ChatItem from './ChatItem';
+import ChatItem from './TabList';
 
 const ChatList = () => {
   // const { chats, currentChatId } = useChatPageState();
