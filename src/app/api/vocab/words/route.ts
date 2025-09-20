@@ -38,11 +38,9 @@ export async function GET(req: NextRequest) {
     const { dbToken } = await requireAuth(req, { requireRealUser: true });
     const db = createRlsSupabase(dbToken);
 
-    console.log('서버로 요청이 오다');
     const parsedQueryParam = VocaListRequestSchema.parse(Object.fromEntries(new URL(req.url).searchParams));
     const result = await getVocabList(db, 'word', { ...parsedQueryParam });
 
-    console.log('서버의 응답: ', result);
     return NextResponse.json(result, { status: 200 });
   } catch (e) {
     if (e instanceof ZodError) {

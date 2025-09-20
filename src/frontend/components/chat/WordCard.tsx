@@ -21,7 +21,6 @@ const WordCard = () => {
   const { data: wordInfo } = useGetRandomWord();
 
   if (!wordInfo) return null;
-  console.log(wordInfo);
 
   return (
     <Card>
