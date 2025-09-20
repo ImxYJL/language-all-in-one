@@ -1,10 +1,9 @@
 import { getRandomWordApi } from '@/apis/wordnik';
 import { ChatContent, ChatInput } from '@/frontend/components/chat';
-import { QueryProvider } from '@/frontend/providers';
 import { QUERY_KEY } from '@/frontend/queries/queryKeys';
 import startMockWorker from '@/libs/msw/startMockWorker';
 import { makeQueryClient } from '@/libs/tanstack/queryClient';
-import { dehydrate } from '@tanstack/react-query';
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { formatKstYmd } from '../utils/times';
 
 startMockWorker();
@@ -18,13 +17,11 @@ async function ChatPage() {
     queryFn: getRandomWordApi,
   });
 
-  const dehydratedState = dehydrate(queryClient);
-
   return (
-    <QueryProvider dehydratedState={dehydratedState}>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <ChatContent />
       {/* <ChatInput /> */}
-    </QueryProvider>
+    </HydrationBoundary>
   );
 }
 
