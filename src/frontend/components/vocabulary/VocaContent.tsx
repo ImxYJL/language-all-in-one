@@ -21,13 +21,13 @@ const VocaContent = () => {
     <div className="w-full">
       <TabList isWordTab={isWordTab} toggleTab={toggleTab} />
 
-      <VocaList />
+      <VocaList isFavorite={isFavorite} isWordTab={isWordTab} />
 
       <BottomSheet isOpen={isSheetOpen} onClose={toggleSheet}>
         {isWordTab ? <WordCreateForm /> : <SentenceCreateForm />}
       </BottomSheet>
 
-      <div className="fixed right-0 bottom-0 left-0 z-50 border border-gray-300 bg-white">
+      <div className="fixed right-0 bottom-0 left-0 z-5 border border-gray-300 bg-white">
         <section className="grid h-16 grid-cols-3">
           <button
             type="button"

@@ -27,7 +27,7 @@ const VocaItem = ({ voca, meaning, isFavorite, example }: VocaItemProps) => {
 
       <div className="flex flex-col gap-2">
         <p className="text-primary text-lg font-bold">{voca}</p>
-        <p className="text-sm text-gray-700">{meaning}</p>
+        {meaning && <p className="text-sm text-gray-700">{meaning}</p>}
       </div>
 
       {/* 예문 */}
