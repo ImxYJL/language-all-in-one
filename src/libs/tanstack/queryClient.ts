@@ -7,6 +7,7 @@ export function makeQueryClient() {
         retry: 1,
         refetchOnWindowFocus: false,
         throwOnError: true,
+        staleTime: 60 * 1000, // for SSR
       },
       mutations: {
         retry: 1,
