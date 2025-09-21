@@ -1,6 +1,6 @@
 export const ENDPOINT = {
   login: '/login',
-  getRandomWord: '/wordnik',
-  getWords: '/vocab/words',
-  getSentences: '/vocab/sentences',
+  randomWord: '/wordnik',
+  words: '/vocab/words',
+  sentences: '/vocab/sentences',
 } as const;
