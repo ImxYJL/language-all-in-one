@@ -1,7 +1,7 @@
 import axios from '@/libs/axios/axios';
 import { ENDPOINT } from '@/apis/endpoints';
 import { isServer, withServerAuthHeaders } from '@/libs/axios/serverAuth';
-import { SentenceListResponse, WordListResponse } from '@/types/vocabulary';
+import { CreateSentenceParsed, CreateWordParsed, SentenceListResponse, WordListResponse } from '@/types/vocabulary';
 
 export const DEFAULT_SIZE_PER_PAGE = 20;
 
@@ -14,7 +14,7 @@ export interface GetVocaListParams {
 export const getWordsApi = async ({ isFavorited, afterId, limit }: GetVocaListParams) => {
   const headers = isServer() ? await withServerAuthHeaders() : undefined;
 
-  const { data } = await axios.get<WordListResponse>(ENDPOINT.getWords, {
+  const { data } = await axios.get<WordListResponse>(ENDPOINT.words, {
     headers,
     params: {
       limit,
@@ -29,7 +29,7 @@ export const getWordsApi = async ({ isFavorited, afterId, limit }: GetVocaListPa
 export const getSentencesApi = async ({ isFavorited, afterId, limit }: GetVocaListParams) => {
   const headers = isServer() ? await withServerAuthHeaders() : undefined;
 
-  const { data } = await axios.get<SentenceListResponse>(ENDPOINT.getSentences, {
+  const { data } = await axios.get<SentenceListResponse>(ENDPOINT.sentences, {
     headers,
     params: {
       limit,
@@ -38,5 +38,19 @@ export const getSentencesApi = async ({ isFavorited, afterId, limit }: GetVocaLi
     },
   });
 
+  return data;
+};
+
+export const postWordApi = async (params: CreateWordParsed) => {
+  const headers = isServer() ? await withServerAuthHeaders() : undefined;
+
+  const { data } = await axios.post(ENDPOINT.words, params, { headers });
+  return data;
+};
+
+export const postSentenceApi = async (params: CreateSentenceParsed) => {
+  const headers = isServer() ? await withServerAuthHeaders() : undefined;
+
+  const { data } = await axios.post(ENDPOINT.sentences, params, { headers });
   return data;
 };
