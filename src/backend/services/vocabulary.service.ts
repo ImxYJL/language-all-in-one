@@ -29,7 +29,7 @@ export async function addWord(db: SupabaseClient, params: CreateWordInput): AddI
   const p_examples = params.examples ?? null;
   const { data, error } = await db.rpc('create_word_v3', {
     p_headword: params.headword,
-    p_meaningKo: params.meaningKo ?? null,
+    p_meaning_ko: params.meaningKo ?? null,
     p_lemma: params.lemma ?? null,
     p_phonetic: params.phonetic ?? null,
     p_favorited: params.favorited ?? false,
