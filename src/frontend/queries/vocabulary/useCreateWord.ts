@@ -24,8 +24,6 @@ export const useCreateWord = ({ onSuccess }: useCreateWordParams) => {
         if (serverMessage) {
           alert(serverMessage);
         } else {
-          // 서버가 특정 메시지를 주지 않은 경우, 일반적인 에러 메시지를 표시
-          // toast.error('단어 추가 중 에러가 발생했습니다.');
           alert('단어 추가 중 에러가 발생했습니다.');
         }
       }
