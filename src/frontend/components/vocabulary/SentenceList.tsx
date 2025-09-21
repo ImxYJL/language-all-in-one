@@ -20,6 +20,7 @@ const SentenceList = ({ isFavorite }: VocaListContentProps) => {
         <VocaItem
           key={sentences.id}
           id={sentences.id}
+          itemType="sentence"
           voca={sentences.sentence.text}
           meaning={sentences.sentence.translation ?? ''}
           isFavorite={sentences.favorited}
