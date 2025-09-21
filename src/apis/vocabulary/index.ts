@@ -54,3 +54,21 @@ export const postSentenceApi = async (params: CreateSentenceParsed) => {
   const { data } = await axios.post(ENDPOINT.sentences, params, { headers });
   return data;
 };
+
+export interface PatchIsFavoriteParams {
+  isFavorite: boolean;
+  id: string;
+}
+
+export const patchIsFavoriteApi = async ({ id, isFavorite }: PatchIsFavoriteParams) => {
+  const headers = isServer() ? await withServerAuthHeaders() : undefined;
+
+  const { data } = await axios.patch(
+    ENDPOINT.favoriteItem(id),
+    {
+      value: isFavorite,
+    },
+    { headers },
+  );
+  return data;
+};

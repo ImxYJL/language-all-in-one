@@ -20,6 +20,7 @@ const WordList = ({ isFavorite }: VocaListContentProps) => {
         <VocaItem
           key={word.id}
           id={word.id}
+          itemType="word"
           voca={word.word.headword}
           meaning={word.word.meaningKo ?? ''}
           isFavorite={word.favorited}
