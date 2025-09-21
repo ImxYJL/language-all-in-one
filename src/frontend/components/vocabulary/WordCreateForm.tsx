@@ -5,16 +5,19 @@ import { CreateWordInput, CreateWordParsed } from '@/types/vocabulary';
 import { useState } from 'react';
 import { Button, InputField, Switch } from '../common';
 import { useZodForm } from '@/frontend/hooks';
+import { useCreateWord } from '@/frontend/queries/vocabulary/useCreateWord';
+import { BottomSheetFormProps } from './VocaContent';
 
 // 근데 완전히 데이터 타입을 제네릭 지원할 게 아니라면 그냥 favorite마냥 setState 직접 넘겨줘도 될 듯
 // (그냥 완전히 onChange는 알아서 걸어주도록)
-const WordCreateForm = () => {
+const WordCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
   const { values, setValue, registerText, isValid } = useZodForm(CreateWordSchema, {
     headword: '',
     meaningKo: '',
     favorited: false,
     examples: null,
   });
+  const { mutate } = useCreateWord({ onSuccess: closeSheet });
 
   // TODO: 추후 다중 문장 입력 받거나, DB 타입을 단일 text로 수정
   const [example, setExample] = useState('');
@@ -32,7 +35,7 @@ const WordCreateForm = () => {
     if (!parsed.success) return;
 
     const data: CreateWordParsed = parsed.data;
-    console.log('submit:', data);
+    mutate(data);
   };
 
   // TODO: InputField에서 그냥 Input 컴포넌트 자체를 children으로 받도록 만들기

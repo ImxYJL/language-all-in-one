@@ -8,6 +8,10 @@ import WordCreateForm from './WordCreateForm';
 import { Plus } from 'lucide-react';
 import VocaList from './VocaList';
 
+export interface BottomSheetFormProps {
+  closeSheet: () => void;
+}
+
 const VocaContent = () => {
   const [isWordTab, setIsWordTab] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -24,7 +28,7 @@ const VocaContent = () => {
       <VocaList isFavorite={isFavorite} isWordTab={isWordTab} />
 
       <BottomSheet isOpen={isSheetOpen} onClose={toggleSheet}>
-        {isWordTab ? <WordCreateForm /> : <SentenceCreateForm />}
+        {isWordTab ? <WordCreateForm closeSheet={toggleSheet} /> : <SentenceCreateForm closeSheet={toggleSheet} />}
       </BottomSheet>
 
       <div className="fixed right-0 bottom-0 left-0 z-5 border border-gray-300 bg-white">

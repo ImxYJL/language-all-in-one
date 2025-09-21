@@ -4,13 +4,16 @@ import { CreateSentenceSchema } from '@/backend/clients/word/vocabulary.schemas'
 import { CreateSentenceInput, CreateSentenceParsed } from '@/types/vocabulary';
 import { Button, InputField, Switch } from '../common';
 import { useZodForm } from '@/frontend/hooks';
+import { BottomSheetFormProps } from './VocaContent';
+import { useCreateSentence } from '@/frontend/queries/vocabulary/useCreateSentence';
 
-const SentenceCreateForm = () => {
+const SentenceCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
   const { values, setValue, registerText, isValid } = useZodForm(CreateSentenceSchema, {
     text: '',
     translation: '',
     favorited: false,
   });
+  const { mutate } = useCreateSentence({ onSuccess: closeSheet });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,7 +26,7 @@ const SentenceCreateForm = () => {
     if (!parsed.success) return;
 
     const data: CreateSentenceParsed = parsed.data;
-    console.log('submit:', data);
+    mutate(data);
   };
 
   return (

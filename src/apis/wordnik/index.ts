@@ -5,7 +5,7 @@ import { isServer, withServerAuthHeaders } from '@/libs/axios/serverAuth';
 
 export async function getRandomWordApi() {
   const headers = isServer() ? await withServerAuthHeaders() : undefined;
-  const { data } = await axios.get<AppWordBundle>(ENDPOINT.getRandomWord, { headers });
+  const { data } = await axios.get<AppWordBundle>(ENDPOINT.randomWord, { headers });
 
   return data;
 }
