@@ -19,8 +19,8 @@ const Tab = ({ isSelected, onClick, children }: PropsWithChildren<TabProps>) => 
         className={clsx(
           'inline-flex w-full items-center justify-center gap-2 rounded-md px-2 py-3 text-sm transition-colors',
           isSelected
-            ? 'bg-[var(--color-primary)] text-white shadow-sm'
-            : 'text-neutral-600 hover:bg-white hover:text-neutral-900',
+            ? 'cursor-default bg-[var(--color-primary)] text-white shadow-sm'
+            : 'cursor-pointer text-neutral-600 hover:bg-white hover:text-neutral-900',
         )}
       >
         {children}
@@ -36,7 +36,7 @@ interface TabListProps {
 
 const TabList = ({ isWordTab, toggleTab }: TabListProps) => {
   return (
-    <ul className="m-2 flex w-full gap-1 rounded-xl bg-neutral-100 p-1.5">
+    <ul className="m-2 flex gap-1 rounded-xl bg-neutral-100 p-1.5">
       <Tab isSelected={isWordTab} onClick={toggleTab}>
         <>
           <BookOpen className="h-4 w-4" />

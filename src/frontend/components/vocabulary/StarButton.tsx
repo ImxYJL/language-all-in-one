@@ -20,7 +20,11 @@ const StarButton = ({ id, isFavorite, itemType }: StarButtonProps) => {
     });
 
   return (
-    <button type="button" className="transition-transform hover:scale-110" onClick={handleFavoriteToggle}>
+    <button
+      type="button"
+      className="cursor-pointer transition-transform hover:scale-110"
+      onClick={handleFavoriteToggle}
+    >
       <Star
         className={`h-5 w-5 transition-colors ${
           isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-gray-400 hover:text-yellow-400'
