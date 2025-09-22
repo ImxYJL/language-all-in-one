@@ -17,13 +17,14 @@ const WordCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
     favorited: false,
     examples: null,
   });
-  const { mutate } = useCreateWord({ onSuccess: closeSheet });
+  const { mutate, isPending } = useCreateWord({ onSuccess: closeSheet });
 
   // TODO: 추후 다중 문장 입력 받거나, DB 타입을 단일 text로 수정
   const [example, setExample] = useState('');
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isPending) return;
 
     // 예문을 배열 형태로 보내야 하므로 변환
     const payload: CreateWordInput = {
@@ -65,8 +66,14 @@ const WordCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
       </div>
 
       <div className="pt-1">
-        <Button type="submit" styleType="primary" className="h-12 w-full" disabled={!isValid}>
-          추가하기
+        <Button type="submit" styleType="primary" className="h-12 w-full" disabled={!isValid || isPending}>
+          {isPending ? (
+            <div className="flex items-center justify-center gap-2">
+              <p>추가하는 중...</p>
+            </div>
+          ) : (
+            '추가하기'
+          )}
         </Button>
       </div>
     </form>
