@@ -10,7 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = ({ type, styleType = 'primary', disabled, className, ...props }: ButtonProps) => {
   const base = 'rounded font-medium transition';
   const disabledStyle =
-    'bg-[color:var(--theme-disabled-bg)] text-[color:var(--theme-disabled-text)] opacity-50 cursor-not-allowed pointer-events-none';
+    'bg-[color:var(--theme-disabled-bg)] text-[color:var(--theme-disabled-text)] opacity-50 cursor-not-allowed';
 
   const variants = {
     primary: 'bg-primary text-white hover:bg-[color:var(--color-primary-hover1)]',

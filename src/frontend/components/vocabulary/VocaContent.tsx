@@ -36,14 +36,14 @@ const VocaContent = () => {
           <button
             type="button"
             onClick={toggleIsFavorite}
-            className="text-primary flex flex-col items-center justify-center gap-1"
+            className="text-primary flex cursor-pointer flex-col items-center justify-center gap-1"
           >
             {isFavorite === true ? '전체보기' : '즐겨찾기만 보기'}
           </button>
           <button
             type="button"
             onClick={() => setIsSheetOpen(true)}
-            className="text-primary flex flex-col items-center justify-center gap-1"
+            className="text-primary flex cursor-pointer flex-col items-center justify-center gap-1"
           >
             <div className="bg-primary flex h-12 w-12 items-center justify-center rounded-full">
               <Plus className="h-6 w-6 text-white" />

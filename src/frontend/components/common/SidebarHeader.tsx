@@ -10,7 +10,7 @@ const SidebarHeader = () => {
   return (
     <div className="border-border flex h-14 items-center justify-between border-b p-4">
       <h2 className="font-medium text-gray-800">ChatAI</h2>
-      <Button styleType="custom" onClick={closeSidebar} className="text-gray-500 hover:text-gray-700">
+      <Button styleType="custom" onClick={closeSidebar} className="cursor-pointer text-gray-500 hover:text-gray-700">
         <X className="h-5 w-5" />
       </Button>
     </div>

@@ -14,7 +14,7 @@ const Sidebar = () => {
         <div className="p-4">
           <Button
             styleType="primary"
-            className="flex h-10 w-full items-center justify-center transition-all duration-200"
+            className="flex h-10 w-full cursor-pointer items-center justify-center transition-all duration-200"
           >
             <Plus className="mr-2 h-4 w-4 text-white" strokeWidth={3} />
             <span>새로운 채팅</span>

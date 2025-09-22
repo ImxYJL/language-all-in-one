@@ -8,7 +8,13 @@ const SidebarToggleButton = () => {
   const { toggleSidebar, isSidebarOpen } = useSidebarStateContext();
 
   return (
-    <Button styleType="custom" onClick={toggleSidebar} aria-controls="app-sidebar" aria-expanded={isSidebarOpen}>
+    <Button
+      styleType="custom"
+      onClick={toggleSidebar}
+      aria-controls="app-sidebar"
+      aria-expanded={isSidebarOpen}
+      className="cursor-pointer"
+    >
       <Menu className="h-5 w-5" />
     </Button>
   );
