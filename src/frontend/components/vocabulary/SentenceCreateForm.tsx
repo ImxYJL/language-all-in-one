@@ -13,10 +13,11 @@ const SentenceCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
     translation: '',
     favorited: false,
   });
-  const { mutate } = useCreateSentence({ onSuccess: closeSheet });
+  const { mutate, isPending } = useCreateSentence({ onSuccess: closeSheet });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isPending) return;
 
     const payload: CreateSentenceInput = {
       ...values,
@@ -47,8 +48,14 @@ const SentenceCreateForm = ({ closeSheet }: BottomSheetFormProps) => {
       </div>
 
       <div className="pt-1">
-        <Button type="submit" styleType="primary" className="h-12 w-full" disabled={!isValid}>
-          추가하기
+        <Button type="submit" styleType="primary" className="h-12 w-full" disabled={!isValid || isPending}>
+          {isPending ? (
+            <div className="flex items-center justify-center gap-2">
+              <p>추가하는 중...</p>
+            </div>
+          ) : (
+            '추가하기'
+          )}
         </Button>
       </div>
     </form>
