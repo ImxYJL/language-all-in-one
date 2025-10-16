@@ -16,7 +16,7 @@ export const useCreateWord = ({ onSuccess }: useCreateWordParams) => {
     mutationFn: (params: CreateWordParsed) => postWordApi(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY.words] });
-      toast.success('성공적으로 문장을 추가했습니다.', {
+      toast.success('성공적으로 단어를 추가했습니다.', {
         position: 'top-center',
       });
       onSuccess();
