@@ -2,7 +2,7 @@ import { Overlay } from '@/frontend/components/chat';
 import { Header, Sidebar } from '@/frontend/components/common';
 import { SidebarStateProvider } from '@/frontend/providers';
 
-export default function ChatLayout({ children }: { children: React.ReactNode }) {
+export default function VocabularyLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarStateProvider>
       <div className="bg-background flex min-h-dvh">
