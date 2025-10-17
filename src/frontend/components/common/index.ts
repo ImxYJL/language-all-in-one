@@ -14,3 +14,5 @@ export { default as Textarea } from './Textarea';
 export { default as InputField } from './InputField';
 export { default as Switch } from './Switch';
 export { default as StarLoader } from './StarLoader';
+export { default as ErrorSection } from './ErrorSection';
+export { default as ErrorFallback } from './ErrorFallback';
