@@ -13,6 +13,7 @@ const ServerEnvSchema = z.object({
   JWT_ISSUER: z.string().min(1, 'JWT_ISSUER is required'),
   JWT_AUDIENCE: z.string().min(1, 'JWT_AUDIENCE is required'),
   WORDNIK_API_KEY: z.string().min(1, 'WORDNIK_KEY is required'),
+  GEMINI_API_KEY: z.string().min(1, 'GEMINI_API_KEY is required'),
 });
 
 export const serverEnv = ServerEnvSchema.parse(process.env);
