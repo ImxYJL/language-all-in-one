@@ -1,7 +1,7 @@
-export type ChatRole = 'user' | 'model';
+export type ConversationRole = 'user' | 'model';
 
-export type ChatMessage = {
-  role: ChatRole;
+export type ConversationMessage = {
+  role: ConversationRole;
   content: string;
 };
 
@@ -9,8 +9,8 @@ export type LlmConstructorOption = {
   basePrompt?: string;
 };
 
-export type LlmChatOption = {
-  chatPrompt?: string;
+export type LlmOption = {
+  conversationPrompt?: string;
 };
 
 export abstract class BaseLlm {
@@ -27,5 +27,5 @@ export abstract class BaseLlm {
     this.basePrompt = options?.basePrompt;
   }
 
-  public abstract chat(messages: ChatMessage[], options?: LlmChatOption): AsyncIterable<string>;
+  public abstract chat(messages: ConversationMessage[], options?: LlmOption): AsyncIterable<string>;
 }
