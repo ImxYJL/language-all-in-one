@@ -2,7 +2,7 @@ import 'server-only';
 
 import { serverEnv } from '@/validators/env';
 import { UpstreamError } from '@/backend/error';
-import { BaseLlm, ChatMessage, LlmChatOption, LlmConstructorOption } from '../baseLlm';
+import { BaseLlm, ConversationMessage, LlmOption, LlmConstructorOption } from '../baseLlm';
 import { Content, GoogleGenAI } from '@google/genai';
 import { PROMPT, GEMINI_MODEL } from './gemini.constants';
 
@@ -17,22 +17,22 @@ export class GeminiLlm extends BaseLlm {
   /**
    * BaseLlm이 추상화한 채팅 메세지 타입을 Gemini가 요구하는 Content[]로 변환
    */
-  private convertToGeminiMessages(messages: ChatMessage[]): Content[] {
+  private convertToGeminiMessages(messages: ConversationMessage[]): Content[] {
     return messages.map((msg) => ({
       role: msg.role,
       parts: [{ text: msg.content }],
     }));
   }
 
-  public async *chat(messages: ChatMessage[], options?: LlmChatOption): AsyncIterable<string> {
+  public async *chat(messages: ConversationMessage[], options?: LlmOption): AsyncIterable<string> {
     const combinedPrompt = [
       this.basePrompt, // 공통 (인스턴스 생성 시)
-      options?.chatPrompt, // 채팅방 (chat 호출 시)
+      options?.conversationPrompt, // 채팅방 (chat 호출 시)
     ]
       .filter(Boolean) // null, undefined, 빈 문자열 제거
       .join('\n\n'); // 프롬프트 사이에 공백 추가
 
-    const systemInstruction = combinedPrompt ? { role: 'user' as const, parts: [{ text: combinedPrompt }] } : undefined;
+    const systemInstruction = combinedPrompt ? { role: 'user', parts: [{ text: combinedPrompt }] } : undefined;
     const contents = this.convertToGeminiMessages(messages);
 
     try {
