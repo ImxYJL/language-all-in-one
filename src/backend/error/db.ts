@@ -7,3 +7,7 @@ export function isUniqueViolation(err: any) {
     /duplicate key value/i.test(String(err?.message ?? err?.details ?? ''))
   );
 }
+
+export function isNonExist(err: any) {
+  return err?.code === 'PGRST116' || /0 rows returned/i.test(String(err?.message ?? err?.details ?? ''));
+}
