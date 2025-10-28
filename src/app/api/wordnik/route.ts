@@ -5,11 +5,19 @@ import { requireAuth } from '@/backend/utils/auth/guards';
 import { handleRouteError } from '@/backend/error';
 
 export async function GET(req: NextRequest) {
-  const { authedUserInfo: userInfo } = await requireAuth(req, { requireRealUser: true });
-
-  if (userInfo.isMockUser) return NextResponse.json(MOCKED_RANDOM_WORD);
-
   try {
+    let authResult = null;
+    try {
+      authResult = await requireAuth(req, { requireRealUser: true });
+    } catch {
+      // redirect 직후 race 가능성 → 잠시 대기 후 1회 재시도
+      await new Promise((r) => setTimeout(r, 800));
+      authResult = await requireAuth(req, { requireRealUser: true });
+    }
+
+    const { authedUserInfo: userInfo } = authResult;
+    if (userInfo.isMockUser) return NextResponse.json(MOCKED_RANDOM_WORD);
+
     const bundle = await getWordBundleRandom();
     return NextResponse.json(bundle);
   } catch (e) {
