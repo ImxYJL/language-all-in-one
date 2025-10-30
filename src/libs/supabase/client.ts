@@ -3,7 +3,7 @@ import 'server-only';
 import { serverEnv } from '@/validators/env';
 import { createClient } from '@supabase/supabase-js';
 import { SignJWT } from 'jose';
-
+import { TOKEN_ALG } from '@/backend/utils/auth';
 /**
  * admin 권한을 갖는 supabase client. RLS 우회용. 로그인 과정 중에 사용
  */
@@ -17,7 +17,7 @@ export async function issueDbToken(userId: string) {
     role: 'authenticated',
     aud: 'authenticated',
   })
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: TOKEN_ALG })
     .setIssuer(serverEnv.JWT_ISSUER)
     .setIssuedAt()
     .setExpirationTime('1h')
@@ -29,9 +29,13 @@ export async function issueDbToken(userId: string) {
  */
 export function createRlsSupabase(jwt: string) {
   return createClient(serverEnv.SUPABASE_URL, serverEnv.SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, detectSessionInUrl: false, autoRefreshToken: false },
+    auth: {
+      persistSession: false,
+      detectSessionInUrl: false,
+      autoRefreshToken: false,
+    },
     global: {
-      headers: { Authorization: `Bearer ${jwt}` },
+      headers: { Authorization: `Bearer ${jwt}`, apikey: serverEnv.SUPABASE_ANON_KEY },
     },
   });
 }

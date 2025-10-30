@@ -3,11 +3,11 @@ import { cookies as getCookies } from 'next/headers';
 
 export function readBearer(auth?: string | null): string | undefined {
   if (!auth) return;
+
   const [scheme, ...rest] = auth.split(' ');
   if (scheme?.toLowerCase() !== 'bearer') return;
-  const token = rest.join(' ').trim();
 
-  return token || undefined;
+  return rest.join(' ').trim() || undefined;
 }
 
 export async function getAuthToken(req?: NextRequest, cookieName = 'token') {
