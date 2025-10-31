@@ -10,8 +10,8 @@ export async function GET(req: NextRequest) {
     try {
       authResult = await requireAuth(req, { requireRealUser: true });
     } catch {
-      // redirect 직후 race 가능성 → 잠시 대기 후 1회 재시도
-      await new Promise((r) => setTimeout(r, 800));
+      // NOTE: redirect 직후 race 가능성 → 잠시 대기 후 1회 재시도
+      await new Promise((r) => setTimeout(r, 300));
       authResult = await requireAuth(req, { requireRealUser: true });
     }
 
