@@ -4,6 +4,10 @@ import { ParsedAuthUser } from './types';
 import { MOCKED_USER_ID } from '@/libs/msw/mock/users';
 
 export const TOKEN_ALG = 'HS256';
+export const TOKEN_DURATION = {
+  number: 60 * 60 * 4,
+  string: '4h',
+};
 
 const HS_SECRET = new TextEncoder().encode(serverEnv.SUPABASE_JWT_SECRET);
 
@@ -60,6 +64,6 @@ export async function issueDbToken(userId: string) {
     .setProtectedHeader({ alg: TOKEN_ALG })
     .setIssuer('supabase')
     .setIssuedAt()
-    .setExpirationTime('1h')
+    .setExpirationTime(TOKEN_DURATION.string)
     .sign(secret);
 }

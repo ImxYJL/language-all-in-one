@@ -1,5 +1,6 @@
 import { serverEnv } from '@/validators/env';
 import { SignJWT } from 'jose';
+import { TOKEN_DURATION } from './jwt';
 
 const MOCK_LOGIN_ALG = 'HS256';
 
@@ -14,6 +15,6 @@ export async function createMockToken(payload: { id: string }) {
     .setProtectedHeader({ alg: MOCK_LOGIN_ALG })
     .setIssuer('mock')
     .setIssuedAt()
-    .setExpirationTime('1h')
+    .setExpirationTime(TOKEN_DURATION.string)
     .sign(secret);
 }
