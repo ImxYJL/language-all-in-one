@@ -3,7 +3,7 @@ import 'server-only';
 import { serverEnv } from '@/validators/env';
 import { createClient } from '@supabase/supabase-js';
 import { SignJWT } from 'jose';
-import { TOKEN_ALG } from '@/backend/utils/auth';
+import { TOKEN_ALG, TOKEN_DURATION } from '@/backend/utils/auth';
 /**
  * admin 권한을 갖는 supabase client. RLS 우회용. 로그인 과정 중에 사용
  */
@@ -20,7 +20,7 @@ export async function issueDbToken(userId: string) {
     .setProtectedHeader({ alg: TOKEN_ALG })
     .setIssuer(serverEnv.JWT_ISSUER)
     .setIssuedAt()
-    .setExpirationTime('1h')
+    .setExpirationTime(TOKEN_DURATION.string)
     .sign(new TextEncoder().encode(serverEnv.SUPABASE_JWT_SECRET));
 }
 

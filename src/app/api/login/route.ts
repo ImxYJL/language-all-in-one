@@ -5,7 +5,7 @@ import { isDev, isMockUser } from '@/backend/utils/env';
 import { MOCKED_USER_ID } from '@/libs/msw/mock/users';
 import { AppError, handleRouteError } from '@/backend/error/app';
 import { ZodError } from 'zod';
-import { createMockToken } from '@/backend/utils/auth';
+import { createMockToken, TOKEN_DURATION } from '@/backend/utils/auth';
 import { serverEnv } from '@/validators/env';
 
 function createLoginResponse(token: string, message: string) {
@@ -14,7 +14,7 @@ function createLoginResponse(token: string, message: string) {
     httpOnly: true,
     secure: !isDev(),
     path: '/',
-    maxAge: 60 * 60,
+    maxAge: TOKEN_DURATION.number,
     sameSite: 'lax',
   });
   return res;
