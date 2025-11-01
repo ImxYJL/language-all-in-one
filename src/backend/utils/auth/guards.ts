@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { verifyAuthToken } from './jwt';
 import type { ParsedAuthUser } from './types';
 import { AppError } from '@/backend/error/app';
-import { issueDbToken } from '@/libs/supabase/client';
 import { getAuthToken } from './http';
 
 export type AuthedUser = Pick<ParsedAuthUser, 'id' | 'isMockUser'>;
@@ -17,12 +16,7 @@ export async function requireAuth(req: NextRequest, opts?: AuthOption) {
   const userInfo = await verifyAuthToken(token);
   if (!userInfo) throw AppError.unauthorized('유효하지 않은 접근입니다.');
 
-  const dbToken = await issueDbToken(userInfo.id);
-  if (opts?.requireRealUser && userInfo.isMockUser) {
-    throw AppError.forbidden('유효하지 않은 접근입니다.');
-  }
-
   const authedUserInfo: AuthedUser = { id: userInfo.id, isMockUser: userInfo.isMockUser };
 
-  return { token, dbToken, authedUserInfo };
+  return { token, authedUserInfo };
 }

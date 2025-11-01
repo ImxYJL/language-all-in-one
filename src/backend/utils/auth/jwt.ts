@@ -31,25 +31,6 @@ export async function verifyAuthToken(token: string): Promise<ParsedAuthUser> {
   };
 }
 
-// RLS 검증을 위한 db token 검증
-export async function verifyDbToken(token: string): Promise<ParsedAuthUser> {
-  const { payload } = await jwtVerify(token, HS_SECRET, {
-    algorithms: [TOKEN_ALG],
-    audience: 'authenticated',
-  });
-
-  const id = payload.sub ?? '';
-  const isMock = id === MOCKED_USER_ID || payload.isMockUser === true;
-
-  return {
-    id,
-    isValid: true,
-    isRealUser: !isMock,
-    isMockUser: isMock,
-    payload,
-  };
-}
-
 /**
  * RLS용 DB Token 발급 — 여전히 HS256 기반으로 Supabase가 내부적으로 사용하는 secret을 씀.
  * 이건 Supabase 서버의 내부 인증용이라 client-side에서 사용할 일 없음.

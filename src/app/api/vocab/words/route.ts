@@ -10,7 +10,7 @@ import { isUniqueViolation } from '@/backend/error/db';
 
 export async function POST(req: NextRequest) {
   try {
-    const { dbToken } = await requireAuth(req, { requireRealUser: true });
+    const { token } = await requireAuth(req, { requireRealUser: true });
 
     const body = await req.json();
     const parsedBody = CreateWordSchema.parse(body);
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const examples = parsedBody.examples?.length ? parsedBody.examples : null;
     const lemma = parsedBody.lemma?.trim() || lemmatizeHeadword(parsedBody.headword);
 
-    const db = createRlsSupabase(dbToken);
+    const db = createRlsSupabase(token);
     const result = await addWord(db, { ...parsedBody, lemma, examples });
 
     return NextResponse.json(result, { status: 201 });
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { dbToken } = await requireAuth(req, { requireRealUser: true });
-    const db = createRlsSupabase(dbToken);
+    const { token } = await requireAuth(req, { requireRealUser: true });
+    const db = createRlsSupabase(token);
 
     const parsedQueryParam = VocaListRequestSchema.parse(Object.fromEntries(new URL(req.url).searchParams));
     const result = await getVocabList(db, 'word', { ...parsedQueryParam });
