@@ -10,11 +10,11 @@ const BodySchema = z.object({ value: z.boolean() }).strict();
 
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ itemId: string }> }) {
   try {
-    const { dbToken } = await requireAuth(req, { requireRealUser: true });
+    const { token } = await requireAuth(req, { requireRealUser: true });
     const { itemId } = ParamsSchema.parse(await ctx.params);
     const { value } = BodySchema.parse(await req.json());
 
-    const db = createRlsSupabase(dbToken);
+    const db = createRlsSupabase(token);
     const res = await toggleFavorite(db, itemId, value);
     if (!res?.item_id) throw AppError.notFound();
 

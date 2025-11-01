@@ -9,12 +9,12 @@ import { addSentence, getVocabList } from '@/backend/services/vocabulary.service
 
 export async function POST(req: NextRequest) {
   try {
-    const { dbToken } = await requireAuth(req, { requireRealUser: true });
+    const { token } = await requireAuth(req, { requireRealUser: true });
 
     const body = await req.json();
     const parsedBody = CreateSentenceSchema.parse(body);
 
-    const db = createRlsSupabase(dbToken);
+    const db = createRlsSupabase(token);
     const result = await addSentence(db, { ...parsedBody });
 
     return NextResponse.json(result, { status: 201 });
@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { dbToken } = await requireAuth(req, { requireRealUser: true });
-    const db = createRlsSupabase(dbToken);
+    const { token } = await requireAuth(req, { requireRealUser: true });
+    const db = createRlsSupabase(token);
 
     const parsedQueryParam = VocaListRequestSchema.parse(Object.fromEntries(new URL(req.url).searchParams));
     const result = await getVocabList(db, 'sentence', { ...parsedQueryParam });
