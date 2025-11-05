@@ -1,4 +1,4 @@
-export type ConversationRole = 'user' | 'model';
+export type ConversationRole = 'user' | 'assistant';
 
 export type ConversationMessage = {
   role: ConversationRole;
