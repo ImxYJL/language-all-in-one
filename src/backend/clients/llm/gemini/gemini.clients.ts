@@ -19,7 +19,7 @@ export class GeminiLlm extends BaseLlm {
    */
   private convertToGeminiMessages(messages: ConversationMessage[]): Content[] {
     return messages.map((msg) => ({
-      role: msg.role,
+      role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }],
     }));
   }
@@ -50,17 +50,59 @@ export class GeminiLlm extends BaseLlm {
         if (text) yield text;
       }
     } catch (error) {
-      console.error('Error during Gemini stream generation:', error);
-
       if (error instanceof Error) {
-        throw new UpstreamError(502, 'Gemini API', `Gemini API stream failed: ${error.message}`, error.stack);
+        console.error('Error during Gemini stream generation:', error, error.stack);
+        throw new UpstreamError(502, 'Gemini API', '알 수 없는 오류가 발생했습니다.');
       }
 
-      throw new UpstreamError(500, 'Gemini API', 'An unknown error occurred in GeminiLlm');
+      console.error('Error during Gemini stream generation:', error);
+      throw new UpstreamError(500, 'Gemini API', '알 수 없는 오류가 발생했습니다.');
     }
   }
 }
 
-export const llm: BaseLlm = new GeminiLlm(serverEnv.GEMINI_API_KEY, GEMINI_MODEL, {
+// 안 되면 이 버전으로!
+// public async *chat(messages: ConversationMessage[], options?: LlmOption): AsyncIterable<string> {
+//     const combinedPrompt = [
+//       this.basePrompt, // 공통 (인스턴스 생성 시)
+//       options?.conversationPrompt, // 채팅방 (chat 호출 시)
+//     ]
+//       .filter(Boolean) // null, undefined, 빈 문자열 제거
+//       .join('\n\n'); // 프롬프트 사이에 공백 추가
+
+//     // [수정 2] systemInstruction은 string | undefined 타입이어야 함
+//     const systemInstruction = combinedPrompt ? combinedPrompt : undefined;
+
+//     // [수정 1]이 적용된 함수를 호출
+//     const contents = this.convertToGeminiMessages(messages);
+
+//     try {
+//       const result = await this.llm.models.generateContentStream({
+//         model: this.modelName,
+//         contents: contents,
+//         config: {
+//           systemInstruction, // [수정 2]가 적용된 변수 전달
+//         },
+//       });
+
+//       for await (const chunk of result) {
+//         // [개선] chunk.text가 없을 수도 있으니 text() 메소드 사용
+//         const text = chunk.text();
+
+//         if (text) yield text;
+//       }
+//     } catch (error) {
+//       console.error('Error during Gemini stream generation:', error);
+
+//       if (error instanceof Error) {
+//         throw new UpstreamError(502, 'Gemini API', `Gemini API stream failed: ${error.message}`, error.stack);
+//       }
+
+//       throw new UpSstreamError(500, 'Gemini API', 'An unknown error occurred in GeminiLlm');
+//     }
+//   }
+// }
+
+export const gemini: BaseLlm = new GeminiLlm(serverEnv.GEMINI_API_KEY, GEMINI_MODEL, {
   basePrompt: PROMPT.base,
 });

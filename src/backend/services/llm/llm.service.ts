@@ -1,15 +1,14 @@
-import { ConversationMessage } from '@/backend/clients/llm/baseLlm';
+import { BaseLlm, ConversationMessage } from '@/backend/clients/llm/baseLlm';
 import { PROMPT, SUMMARY_INPUT } from '@/backend/clients/llm/gemini/gemini.constants';
 import { AppError, isNonExist, isUpstreamError } from '@/backend/error';
-import { llm as gemini } from '@/backend/clients/llm/gemini/gemini.clients';
-import { GeminiRole, Message } from '@/backend/models/llm/types';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Message } from '@/backend/models/llm/types';
 import {
   createConversation,
   createMessage,
   findConversationById,
   getMessages,
 } from '@/backend/models/llm/gemini/conversation.model';
-import { SupabaseClient } from '@supabase/supabase-js';
 
 async function getConversationId(db: SupabaseClient, userId: string, id: string): Promise<string> {
   try {
@@ -29,16 +28,16 @@ async function getConversationId(db: SupabaseClient, userId: string, id: string)
 
 export async function getConversations() {}
 
-function convertToLlmMessages(dbMessages: Message<GeminiRole>[]): ConversationMessage[] {
+function convertToContext(dbMessages: Message[]): ConversationMessage[] {
   return dbMessages.map((msg) => ({
-    role: msg.role === 'assistant' ? 'model' : 'user',
+    role: msg.role,
     content: msg.content,
   }));
 }
 
-function createLlmStream(contextMessages: ConversationMessage[], conversationPrompt: string | undefined) {
+function createLlmStream(llm: BaseLlm, contextMessages: ConversationMessage[], conversationPrompt: string | undefined) {
   try {
-    const stream = gemini.chat(contextMessages, {
+    const stream = llm.chat(contextMessages, {
       conversationPrompt,
     });
     return stream;
@@ -57,6 +56,7 @@ export type LlmMessageStream = {
 
 export async function getMessageStream(
   db: SupabaseClient,
+  llm: BaseLlm,
   input: string,
   userId: string,
   id?: string,
@@ -65,13 +65,25 @@ export async function getMessageStream(
 
   // 컨텍스트 준비 및 스트림 생성
   const dbMessages = conversationId ? await getMessages(db, conversationId) : [];
-  const contextMessages = convertToLlmMessages(dbMessages);
+  const contextMessages = convertToContext(dbMessages);
+
   const conversationPrompt = input === SUMMARY_INPUT ? PROMPT.summary : undefined;
 
-  const stream = createLlmStream(contextMessages, conversationPrompt);
+  // 현재 유저가 입력한 메세지를 새 컨텍스트에 추가 (LLM 전달용)
+  // 아니잠만ㅋㅋㅋㅋㅋㅋ 얘는 DB입력 따라가서 DB타입 맞춰야하네...
+
+  // [현재 로직 정리] chat에는 꼭 추상화된 타입 써야 함. (추상화 + role과 content만 있음)
+  // 근데 db에서 갓 가져온 메세지 타입은 메타데이터(id 등)이 붙어 있음.
+  // 그래서 db -> 추상화 타입 변환된 contextMessages -> 여기다 유저 입력 push -> 이걸로 chat 넣어야 함.
+  contextMessages.push({
+    role: 'user',
+    content: input,
+  });
+
+  const stream = createLlmStream(llm, contextMessages, conversationPrompt);
 
   const finalConversationId = conversationId ?? (await createConversation(db, userId)).id;
-  await createMessage(db, finalConversationId, 'user', input);
+  await createMessage(db, finalConversationId, 'user', input); // DB 저장용 유저 입력 저장
 
   return { stream, conversationId: finalConversationId };
 }

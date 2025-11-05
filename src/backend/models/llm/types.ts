@@ -1,3 +1,5 @@
+import { ConversationRole } from '@/backend/clients/llm/baseLlm';
+
 export type Conversation = {
   id: string;
   created_at: string;
@@ -5,12 +7,17 @@ export type Conversation = {
   user_id: string;
 };
 
-export type Message<Role extends string> = {
+export type Message = {
   id: string;
   conversation_id: string;
-  role: Role;
+  role: ConversationRole;
   content: string;
   created_at: string;
 };
 
-export type GeminiRole = 'user' | 'assistant';
+export type GeminiRole = 'user' | 'model';
+
+export type LlmContext<Role extends string> = {
+  role: Role;
+  content: string;
+};

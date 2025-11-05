@@ -1,6 +1,6 @@
 import { ConversationRole } from '@/backend/clients/llm/baseLlm';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Conversation, GeminiRole, Message } from '../types';
+import { Conversation, Message } from '../types';
 
 export async function findConversationById(db: SupabaseClient, conversationId: string): Promise<Conversation> {
   const { data, error } = await db.from('conversations').select('*').eq('id', conversationId).single();
@@ -26,7 +26,7 @@ export async function createMessage(
   conversationId: string,
   role: ConversationRole,
   content: string,
-): Promise<Message<GeminiRole>> {
+): Promise<Message> {
   if (!conversationId || !role || !content) {
     throw new Error('Missing required fields for creating a message.');
   }
@@ -49,7 +49,7 @@ export async function createMessage(
   return data;
 }
 
-export async function getMessages(db: SupabaseClient, conversationId: string): Promise<Message<GeminiRole>[]> {
+export async function getMessages(db: SupabaseClient, conversationId: string): Promise<Message[]> {
   const { data, error } = await db
     .from('messages')
     .select('*')
