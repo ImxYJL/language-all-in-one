@@ -2,8 +2,8 @@ import { NextRequest } from 'next/server';
 import { createRlsSupabase } from '@/libs/supabase/client';
 import { requireAuth } from '@/backend/utils/auth/guards';
 import { handleRouteError } from '@/backend/error/app';
-import { getMessageStream } from '@/backend/services/llm/llm.service';
-import { createConversation, createMessage } from '@/backend/models/llm/gemini/conversation.model';
+import { getMessageStream, getValidConversation } from '@/backend/services/llm/llm.service';
+import { createMessage } from '@/backend/models/llm/gemini/conversation.model';
 import { gemini } from '@/backend/clients/llm/gemini/gemini.clients';
 
 export async function POST(req: NextRequest) {
@@ -11,10 +11,10 @@ export async function POST(req: NextRequest) {
     const { token, authedUserInfo } = await requireAuth(req, { requireRealUser: true });
     const db = createRlsSupabase(token);
 
-    const { input } = await req.json();
+    const { input, id } = await req.json();
 
-    const newConversation = await createConversation(db, authedUserInfo.id);
-    const { stream, conversationId } = await getMessageStream(db, gemini, input, newConversation);
+    const conversation = await getValidConversation(db, authedUserInfo.id, id);
+    const { stream, conversationId } = await getMessageStream(db, gemini, input, conversation);
 
     const responseStream = new ReadableStream({
       async pull(controller) {
@@ -50,8 +50,6 @@ export async function POST(req: NextRequest) {
 
     return new Response(responseStream, {
       headers: {
-        'X-Conversation-Id': newConversation.id,
-        'X-Conversation-Title': newConversation.title,
         'Content-Type': 'text/plain; charset=utf-8',
         'Cache-Control': 'no-cache',
       },
