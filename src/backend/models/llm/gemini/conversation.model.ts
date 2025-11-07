@@ -2,8 +2,8 @@ import { ConversationRole } from '@/backend/clients/llm/baseLlm';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Conversation, Message } from '../types';
 
-export async function findConversationById(db: SupabaseClient, conversationId: string): Promise<Conversation> {
-  const { data, error } = await db.from('conversations').select('*').eq('id', conversationId).single();
+export async function findConversationById(db: SupabaseClient, id: string): Promise<Conversation> {
+  const { data, error } = await db.from('conversations').select('*').eq('id', id).single();
   if (error) throw error;
 
   return data;
@@ -49,16 +49,31 @@ export async function createMessage(
   return data;
 }
 
-export async function getMessages(db: SupabaseClient, conversationId: string): Promise<Message[]> {
+export async function getMessages(db: SupabaseClient, id: string): Promise<Message[]> {
   const { data, error } = await db
     .from('messages')
     .select('*')
-    .eq('conversation_id', conversationId)
+    .eq('conversation_id', id)
     .order('created_at', { ascending: true });
 
   if (error) {
     console.error('Error fetching messages:', error.message);
     throw new Error('Failed to fetch messages.');
+  }
+
+  return data || [];
+}
+
+export async function getConversationTitles(db: SupabaseClient, userId: string) {
+  const { data, error } = await db
+    .from('conversations')
+    .select('id, title, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching conversationTitles:', error.message);
+    throw new Error('Failed to fetch conversationTitles.');
   }
 
   return data || [];

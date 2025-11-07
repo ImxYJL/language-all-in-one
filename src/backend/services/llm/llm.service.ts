@@ -14,25 +14,20 @@ export async function getValidConversation(db: SupabaseClient, userId: string, i
 
     return chat;
   } catch (err) {
-    if (isNonExist(err)) throw AppError.notFound(undefined, `Chat not found with id: ${id}`);
+    if (isNonExist(err)) throw AppError.notFound(undefined, '존재하지 않는 대화입니다.');
     throw err;
   }
 }
 
-async function getConversationId(db: SupabaseClient, userId: string, id: string): Promise<string> {
+export async function getValidMessages(db: SupabaseClient, userId: string, id: string): Promise<Message[]> {
   try {
-    const chat = await findConversationById(db, id);
-    if (chat.user_id !== userId) throw AppError.forbidden(undefined, '접근 권한이 없습니다.');
+    await getValidConversation(db, userId, id); // 소유자 검증
 
-    return chat.id;
+    return await getMessages(db, id);
   } catch (err) {
-    if (isNonExist(err)) throw AppError.notFound(undefined, `${id}라는 대화를 찾을 수 없습니다.`);
-
     throw err;
   }
 }
-
-export async function getConversations(db: SupabaseClient, userId: string) {}
 
 function convertToContext(dbMessages: Message[]): ConversationMessage[] {
   return dbMessages.map((msg) => ({
