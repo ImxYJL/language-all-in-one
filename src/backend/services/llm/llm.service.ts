@@ -3,7 +3,12 @@ import { PROMPT, SUMMARY_INPUT } from '@/backend/clients/llm/gemini/gemini.const
 import { AppError, isNonExist, isUpstreamError } from '@/backend/error';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Conversation, Message } from '@/backend/models/llm/types';
-import { createMessage, findConversationById, getMessages } from '@/backend/models/llm/gemini/conversation.model';
+import {
+  createMessage,
+  createSummary,
+  findConversationById,
+  getMessages,
+} from '@/backend/models/llm/gemini/conversation.model';
 
 export async function getValidConversation(db: SupabaseClient, userId: string, id: string): Promise<Conversation> {
   try {
@@ -52,7 +57,7 @@ function createLlmStream(llm: BaseLlm, contextMessages: ConversationMessage[], c
 
 export type LlmMessageStream = {
   stream: AsyncIterable<string>;
-  conversationId: string;
+  save: (fullResponse: string) => Promise<void>;
 };
 
 export async function getMessageStream(
@@ -62,21 +67,27 @@ export async function getMessageStream(
   conversation: Conversation,
 ): Promise<LlmMessageStream> {
   const conversationId = conversation.id;
+  const userId = conversation.user_id;
+  const isSummary = input === SUMMARY_INPUT;
 
   // 컨텍스트 준비 및 스트림 생성
   const dbMessages = await getMessages(db, conversationId);
   const contextMessages = convertToContext(dbMessages);
-
-  const conversationPrompt = input === SUMMARY_INPUT ? PROMPT.summary : undefined;
-
-  // 현재 유저가 입력한 메세지를 새 컨텍스트에 추가 (LLM 전달용)
   contextMessages.push({
+    // 현재 유저가 입력한 메세지를 새 컨텍스트에 추가 (LLM 전달용)
     role: 'user',
     content: input,
   });
+  await createMessage(db, conversationId, 'user', input); // DB에 현재 유저 입력을 저장
 
+  const conversationPrompt = isSummary ? PROMPT.summary : undefined;
   const stream = createLlmStream(llm, contextMessages, conversationPrompt);
-  await createMessage(db, conversationId, 'user', input); // DB 저장용 유저 입력 저장
 
-  return { stream, conversationId };
+  // 라우터에서 응답을 받고 수행할 응답 저장 로직
+  const save = async (fullResponse: string) => {
+    await createMessage(db, conversationId, 'assistant', fullResponse);
+    if (isSummary) await createSummary(db, userId, conversationId, fullResponse);
+  };
+
+  return { stream, save };
 }
