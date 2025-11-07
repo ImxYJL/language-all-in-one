@@ -6,12 +6,13 @@ import { getMessageStream, getValidConversation } from '@/backend/services/llm/l
 import { createMessage } from '@/backend/models/llm/gemini/conversation.model';
 import { gemini } from '@/backend/clients/llm/gemini/gemini.clients';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { token, authedUserInfo } = await requireAuth(req, { requireRealUser: true });
     const db = createRlsSupabase(token);
 
-    const { input, id } = await req.json();
+    const { id } = params;
+    const { input } = await req.json();
 
     const conversation = await getValidConversation(db, authedUserInfo.id, id);
     const { stream, conversationId } = await getMessageStream(db, gemini, input, conversation);
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     return new Response(responseStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-cache',
+        'Cache-Control': 'no-store',
       },
     });
   } catch (e) {
