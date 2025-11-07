@@ -3,7 +3,6 @@ import { createRlsSupabase } from '@/libs/supabase/client';
 import { requireAuth } from '@/backend/utils/auth/guards';
 import { handleRouteError } from '@/backend/error/app';
 import { getMessageStream, getValidConversation } from '@/backend/services/llm/llm.service';
-import { createMessage } from '@/backend/models/llm/gemini/conversation.model';
 import { gemini } from '@/backend/clients/llm/gemini/gemini.clients';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -15,7 +14,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const { input } = await req.json();
 
     const conversation = await getValidConversation(db, authedUserInfo.id, id);
-    const { stream, conversationId } = await getMessageStream(db, gemini, input, conversation);
+    const { stream, save } = await getMessageStream(db, gemini, input, conversation);
 
     const responseStream = new ReadableStream({
       async pull(controller) {
@@ -29,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
           }
 
           // 클라이언트에 청크 전송 뒤, 완성된 응답(최종본)을 저장
-          await createMessage(db, conversationId, 'assistant', fullResponse);
+          await save(fullResponse);
 
           controller.close();
         } catch (err) {

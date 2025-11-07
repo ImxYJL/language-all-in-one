@@ -64,6 +64,23 @@ export async function getMessages(db: SupabaseClient, id: string): Promise<Messa
   return data || [];
 }
 
+export async function createSummary(db: SupabaseClient, userId: string, id: string, content: string) {
+  if (!userId || !content || !id) {
+    throw new Error('Missing required fields for creating a summary.');
+  }
+
+  const { error } = await db.from('summaries').insert({
+    source_conversation_id: id,
+    user_id: userId,
+    content: content,
+  });
+
+  if (error) {
+    console.error('Error creating summary:', error?.message);
+    throw new Error('Failed to create a new summary.');
+  }
+}
+
 export async function getConversationTitles(db: SupabaseClient, userId: string) {
   const { data, error } = await db
     .from('conversations')
