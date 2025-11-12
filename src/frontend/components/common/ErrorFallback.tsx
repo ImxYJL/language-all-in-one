@@ -2,15 +2,12 @@
 
 import { ErrorSection } from '@/frontend/components/common';
 import { useRouter } from 'next/navigation';
-import { FallbackProps } from 'react-error-boundary';
+import type { FallbackProps } from 'react-error-boundary';
 
 const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   const router = useRouter();
 
-  const goChatPage = () => {
-    resetErrorBoundary();
-    router.push('/chat');
-  };
+  const goChatPage = () => router.push('/chat');
 
   return (
     <ErrorSection
