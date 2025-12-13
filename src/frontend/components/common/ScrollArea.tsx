@@ -1,11 +1,12 @@
 'use client';
 
+import { Message } from '@/backend/models/llm/types';
 import { useScrollSensor } from '@/frontend/hooks';
 import { useEffect } from 'react';
 
 interface ScrollAreaProps {
-  currentChatId?: number;
-  messages?: string[]; // 추후 변경 가능
+  currentChatId?: string;
+  messages?: Message[]; // 추후 변경 가능
   children: React.ReactNode;
   className?: string;
 }

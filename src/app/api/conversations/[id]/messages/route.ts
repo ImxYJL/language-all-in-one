@@ -10,8 +10,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const db = createRlsSupabase(token);
 
-    console.log('넘어온 id:', id);
-
     const messages = await getValidMessages(db, authedUserInfo.id, id);
     return NextResponse.json(messages);
   } catch (e) {
