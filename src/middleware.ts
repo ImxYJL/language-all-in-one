@@ -15,7 +15,6 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// '/vocabulary/:path*'
 export const config = {
-  matcher: ['/dashboard/:path*', '/chat/:path*'],
+  matcher: ['/dashboard/:path*', '/chat/:path*', '/vocabulary/:path*'],
 };
