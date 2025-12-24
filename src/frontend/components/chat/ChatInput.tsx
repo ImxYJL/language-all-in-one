@@ -1,21 +1,42 @@
-import { Mic, Send } from 'lucide-react';
-import { Button, Input } from '@/frontend/components/common';
+'use client';
 
-const ChatInput = () => {
+import { Send } from 'lucide-react';
+import { Button, Input } from '@/frontend/components/common';
+import { FormEvent, useState } from 'react';
+
+type ChatInputProps = {
+  onSend: (input: string) => void;
+  isLoading: boolean;
+};
+
+const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
+  const [userInput, setUserInput] = useState('');
+  const isValidInput = userInput.trim() !== '' && userInput.length > 0;
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isValidInput || isLoading) return;
+
+    const trimmedInput = userInput.trim();
+    onSend(trimmedInput);
+
+    setUserInput('');
+  };
+
   return (
     <div className="border-t bg-white/80 p-4 backdrop-blur-sm">
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
         <div className="flex items-end gap-3">
           <div className="relative flex-1">
             <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
               placeholder="메시지를 입력하세요..."
               className="hover:border-primary focus:border-primary min-h-[48px] resize-none rounded-2xl border-2 pr-20 transition-colors"
               disabled={isLoading}
             />
             <div className="absolute top-1/2 right-2 flex -translate-y-1/2 gap-1">
-              <Button
+              {/* <Button
                 styleType="custom"
                 onClick={handleVoiceInput}
                 className={`h-8 w-8 rounded-full transition-colors ${
@@ -23,10 +44,10 @@ const ChatInput = () => {
                 }`}
               >
                 <Mic className="h-4 w-4" />
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
-                disabled={!input.trim() || isLoading}
+                disabled={!isValidInput || isLoading}
                 className="bg-primary hover:bg-primary-hover1 h-8 w-8 rounded-full transition-colors"
               >
                 <Send className="h-4 w-4" />
