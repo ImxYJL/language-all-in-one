@@ -4,7 +4,8 @@ import { serverEnv } from '@/validators/env';
 import { UpstreamError } from '@/backend/error';
 import { BaseLlm, ConversationMessage, LlmOption, LlmConstructorOption } from '../baseLlm';
 import { Content, GoogleGenAI } from '@google/genai';
-import { PROMPT, GEMINI_MODEL } from './gemini.constants';
+import { GEMINI_MODEL } from './gemini.constants';
+import { getPrompt } from '@/backend/utils/prompt';
 
 export class GeminiLlm extends BaseLlm {
   private llm: GoogleGenAI;
@@ -62,5 +63,5 @@ export class GeminiLlm extends BaseLlm {
 }
 
 export const gemini: BaseLlm = new GeminiLlm(serverEnv.GEMINI_API_KEY, GEMINI_MODEL, {
-  basePrompt: PROMPT.base,
+  basePrompt: getPrompt('Base'),
 });

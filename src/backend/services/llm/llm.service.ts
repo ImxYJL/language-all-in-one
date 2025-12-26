@@ -1,8 +1,9 @@
 import { BaseLlm, ConversationMessage } from '@/backend/clients/llm/baseLlm';
-import { PROMPT, SUMMARY_INPUT } from '@/backend/clients/llm/gemini/gemini.constants';
+import { SUMMARY_INPUT } from '@/backend/clients/llm/gemini/gemini.constants';
 import { AppError, isNonExist, isUpstreamError } from '@/backend/error';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Conversation, Message } from '@/backend/models/llm/types';
+import { getPrompt } from '@/backend/utils/prompt';
 import {
   createMessage,
   createSummary,
@@ -80,7 +81,7 @@ export async function getMessageStream(
   });
   await createMessage(db, conversationId, 'user', input); // DB에 현재 유저 입력을 저장
 
-  const conversationPrompt = isSummary ? PROMPT.summary : undefined;
+  const conversationPrompt = isSummary ? getPrompt('Summary') : undefined;
   const stream = createLlmStream(llm, contextMessages, conversationPrompt);
 
   // 라우터에서 응답을 받고 수행할 응답 저장 로직
