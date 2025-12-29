@@ -1,6 +1,7 @@
 import { BookOpen, Calendar, MessageCircle, Plus } from 'lucide-react';
-import { Button, NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
+import { NavigationList, NavigationItem, SidebarHeader } from '@/frontend/components/common';
 import { ChatList } from '../chat';
+import Link from 'next/link';
 
 const Sidebar = () => {
   return (
@@ -10,15 +11,16 @@ const Sidebar = () => {
     >
       <div className="flex h-full flex-col">
         <SidebarHeader />
+
         {/* New Chat Button */}
         <div className="p-4">
-          <Button
-            styleType="primary"
-            className="flex h-10 w-full cursor-pointer items-center justify-center transition-all duration-200"
+          <Link
+            href="/chat"
+            className="hover:bg-primary-hover1 bg-primary flex h-10 w-full cursor-pointer items-center justify-center rounded font-medium text-white transition transition-all duration-200"
           >
             <Plus className="mr-2 h-4 w-4 text-white" strokeWidth={3} />
-            <span>새로운 채팅</span>
-          </Button>
+            <span>새 채팅 시작</span>
+          </Link>
         </div>
 
         <div className="flex-1 px-4">
