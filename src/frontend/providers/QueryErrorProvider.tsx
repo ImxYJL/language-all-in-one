@@ -5,15 +5,25 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { type ReactNode } from 'react';
 import ErrorFallback from '@/app/error';
 
-type Props = {
+type QueryErrorProviderProps = {
   children: ReactNode;
 };
 
-const QueryErrorProvider = ({ children }: Props) => {
+const QueryErrorProvider = ({ children }: QueryErrorProviderProps) => {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
-        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reset}>
+        <ErrorBoundary
+          fallbackRender={({ error, resetErrorBoundary }) => (
+            <ErrorFallback
+              error={error}
+              reset={() => {
+                reset(); // TanStack Query 캐시 리셋
+                resetErrorBoundary(); // ErrorBoundary UI 리셋
+              }}
+            />
+          )}
+        >
           {children}
         </ErrorBoundary>
       )}
